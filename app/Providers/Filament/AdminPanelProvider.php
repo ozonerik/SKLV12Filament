@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->authGuard('web') // Pastikan ini menggunakan guard 'web' (User model)
             ->colors([
                 'primary' => Color::Amber,
             ])
