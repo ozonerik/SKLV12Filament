@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Skl extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'student_id', 'major_id','school_year_id', 'letter_number', 'status', 
         'letter_date', 'published_at', 'is_questionnaire_completed'
