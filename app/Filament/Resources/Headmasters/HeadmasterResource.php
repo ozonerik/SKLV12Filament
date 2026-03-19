@@ -19,7 +19,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Forms\Form; // Menggunakan Form untuk mendefinisikan form secara lebih fleksibel
+//use Filament\Forms\Form; // Menggunakan Form untuk mendefinisikan form secara lebih fleksibel
 use Filament\Tables\Columns\ImageColumn; // Tambahkan untuk menampilkan gambar di tabel
 
 class HeadmasterResource extends Resource
@@ -47,13 +47,7 @@ class HeadmasterResource extends Resource
                     ->disk('public') // MEMASTIKAN tersimpan di storage/app/public
                     ->directory('headmasters/signatures') // File akan ada di storage/app/public/headmasters/signatures
                     ->visibility('public')
-                    // OPTIMASI: Batasi ukuran file agar proses 'size check' lebih cepat
-                    ->maxSize(1024) // Maksimal 1MB
-                    // Matikan imageEditor jika tidak sangat diperlukan, karena ini sering menyebabkan loading lama
-                    ->imageEditor(false)
-                    // Menghindari loading lama saat generate preview
-                    ->moveFiles()
-                    // Memastikan hanya file gambar yang diterima
+                    ->previewable(false) // Nonaktifkan preview karena kita akan menampilkan gambar di tabel, bukan di form
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg'])
                     ->required(),
                 Toggle::make('is_active')
@@ -74,7 +68,10 @@ class HeadmasterResource extends Resource
                     ->searchable(),
                 // Menampilkan preview tanda tangan di tabel
                 ImageColumn::make('ttd')
-                    ->label('Tanda Tangan'),
+                    ->label('Tanda Tangan')
+                    ->disk('public') // Pastikan ini sesuai dengan disk yang digunakan di FileUpload
+                    //->directory('headmasters/signatures') // Pastikan ini sesuai dengan directory yang digunakan di
+                    ->visibility('public'),
                 IconColumn::make('is_active')
                     ->boolean(),
                 TextColumn::make('created_at')

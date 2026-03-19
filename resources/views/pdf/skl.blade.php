@@ -73,7 +73,7 @@
             </tr>
             <tr>
                 <td class="label">Jurusan</td>
-                <td>: {{ $major?->name ?? '-' }}</td>
+                <td>: {{ $major?->konsentrasi_keahlian ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="label">Tahun Pelajaran</td>
