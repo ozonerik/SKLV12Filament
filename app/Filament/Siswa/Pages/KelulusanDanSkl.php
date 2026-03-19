@@ -88,9 +88,15 @@ class KelulusanDanSkl extends Page
         abort_unless($skl->is_questionnaire_completed, 403);
         abort_unless($skl->isPublished(), 403);
 
-        $student = $skl->student()->with('major')->first();
-        $schoolYear = $skl->schoolYear()->with('headmaster')->first();
-        $major = $skl->major;
+        // FIX: Ambil student beserta relasi major dan schoolYear-nya
+        $student = $skl->student()
+            ->with(['major', 'schoolYear.headmaster'])
+            ->first();
+
+        // Ambil schoolYear dari object student
+        $schoolYear = $student?->schoolYear;
+        $headmaster = $schoolYear?->headmaster; // Di sini kita mendapatkan objek Headmaster
+        $major = $student?->major;
         $grades = Grade::query()
             ->where('student_id', $skl->student_id)
             ->with('subject')
@@ -103,13 +109,13 @@ class KelulusanDanSkl extends Page
             'student' => $student,
             'schoolYear' => $schoolYear,
             'major' => $major,
-            'headmaster' => $schoolYear?->headmaster,
+            'headmaster' => $headmaster, // Data Headmaster (termasuk kolom 'ttd')
             'grades' => $grades,
             'averageScore' => $average,
         ])->setPaper('a4');
 
         return response()->streamDownload(
-            fn () => print($pdf->output()),
+            fn() => print($pdf->output()),
             "SKL-{$student?->nisn}.pdf",
             ['Content-Type' => 'application/pdf']
         );
@@ -140,4 +146,3 @@ class KelulusanDanSkl extends Page
             ->avg('score') ?? 0);
     }
 }
-

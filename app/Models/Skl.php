@@ -10,7 +10,7 @@ class Skl extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id', 'major_id','school_year_id', 'letter_number', 'status', 
+        'student_id', 'letter_number', 'status', 
         'letter_date', 'published_at', 'is_questionnaire_completed'
     ];
 
@@ -21,13 +21,6 @@ class Skl extends Model
     ];
 
     public function student() { return $this->belongsTo(Student::class); }
-
-    public function major()
-    {
-        return $this->belongsTo(Major::class);
-    }
-
-    public function schoolYear() { return $this->belongsTo(SchoolYear::class); }
     
     // Helper untuk cek apakah sudah bisa diakses
     public function isPublished(): bool

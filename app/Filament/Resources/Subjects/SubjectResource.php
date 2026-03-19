@@ -30,6 +30,8 @@ class SubjectResource extends Resource
     {
         return $schema
             ->components([
+                TextInput::make('kode')
+                    ->required(),
                 TextInput::make('name')
                     ->required(),
                 Select::make('category')
@@ -43,6 +45,8 @@ class SubjectResource extends Resource
         return $table
             ->recordTitleAttribute('name')
             ->columns([
+                TextColumn::make('kode')
+                    ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('category')

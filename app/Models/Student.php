@@ -11,7 +11,7 @@ class Student extends Authenticatable implements FilamentUser
 {
     use HasFactory;
 
-    protected $fillable = ['major_id', 'name', 'pob', 'dob', 'nis', 'nisn', 'father_name', 'password'];
+    protected $fillable = ['major_id', 'school_year_id', 'name', 'pob', 'dob', 'nis', 'nisn', 'father_name', 'password'];
 
     protected $hidden = [
         'password', 'remember_token',
@@ -44,6 +44,10 @@ class Student extends Authenticatable implements FilamentUser
     public function major()
     {
         return $this->belongsTo(Major::class);
+    }
+
+    public function schoolYear() { 
+        return $this->belongsTo(SchoolYear::class); 
     }
 
     public function grades()

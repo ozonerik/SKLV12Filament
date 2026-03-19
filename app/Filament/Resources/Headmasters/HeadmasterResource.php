@@ -6,6 +6,7 @@ use App\Filament\Resources\Headmasters\Pages\CreateHeadmaster;
 use App\Filament\Resources\Headmasters\Pages\EditHeadmaster;
 use App\Filament\Resources\Headmasters\Pages\ListHeadmasters;
 use App\Models\Headmaster;
+use Filament\Forms\Components\FileUpload; // Import initially untuk FileUpload, tapi kita akan menggunakan TextInput untuk menyimpan path/URL tanda tangan
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -18,6 +19,8 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Forms\Form; // Menggunakan Form untuk mendefinisikan form secara lebih fleksibel
+use Filament\Tables\Columns\ImageColumn; // Tambahkan untuk menampilkan gambar di tabel
 
 class HeadmasterResource extends Resource
 {
@@ -37,6 +40,22 @@ class HeadmasterResource extends Resource
                     ->required(),
                 TextInput::make('nip')
                     ->required(),
+                // Perubahan di sini: Menggunakan FileUpload
+                FileUpload::make('ttd')
+                    ->label('Tanda Tangan')
+                    ->image() // Memastikan file adalah gambar
+                    ->disk('public') // MEMASTIKAN tersimpan di storage/app/public
+                    ->directory('headmasters/signatures') // File akan ada di storage/app/public/headmasters/signatures
+                    ->visibility('public')
+                    // OPTIMASI: Batasi ukuran file agar proses 'size check' lebih cepat
+                    ->maxSize(1024) // Maksimal 1MB
+                    // Matikan imageEditor jika tidak sangat diperlukan, karena ini sering menyebabkan loading lama
+                    ->imageEditor(false)
+                    // Menghindari loading lama saat generate preview
+                    ->moveFiles()
+                    // Memastikan hanya file gambar yang diterima
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg'])
+                    ->required(),
                 Toggle::make('is_active')
                     ->required(),
             ]);
@@ -53,6 +72,9 @@ class HeadmasterResource extends Resource
                     ->searchable(),
                 TextColumn::make('nip')
                     ->searchable(),
+                // Menampilkan preview tanda tangan di tabel
+                ImageColumn::make('ttd')
+                    ->label('Tanda Tangan'),
                 IconColumn::make('is_active')
                     ->boolean(),
                 TextColumn::make('created_at')

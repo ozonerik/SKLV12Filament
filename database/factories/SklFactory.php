@@ -21,8 +21,6 @@ class SklFactory extends Factory
 
         return [
             'student_id' => Student::query()->inRandomOrder()->value('id') ?? Student::factory(),
-            'major_id' => Major::query()->inRandomOrder()->value('id') ?? Major::factory(),
-            'school_year_id' => SchoolYear::query()->inRandomOrder()->value('id') ?? SchoolYear::factory(),
             'letter_number' => sprintf('%03d/SKL/%s/%s', fake()->numberBetween(1, 999), now()->format('m'), now()->format('Y')),
             'status' => fake()->randomElement(['Lulus', 'Tidak Lulus']),
             'letter_date' => $letterDate,

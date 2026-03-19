@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('rank'); // Pangkat/Golongan
             $table->string('nip')->unique();
+            $table->string('ttd'); // Path atau URL untuk tanda tangan digital
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

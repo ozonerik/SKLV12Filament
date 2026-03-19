@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Major;
+use App\Models\SchoolYear;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,6 +21,7 @@ class StudentFactory extends Factory
 
         return [
             'major_id' => Major::query()->inRandomOrder()->value('id') ?? Major::factory(),
+            'school_year_id' => SchoolYear::query()->inRandomOrder()->value('id') ?? SchoolYear::factory(),
             'name' => fake()->name(),
             'pob' => fake()->city(),
             'dob' => $dob->format('Y-m-d'),

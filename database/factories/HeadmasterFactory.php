@@ -21,6 +21,7 @@ class HeadmasterFactory extends Factory
                 'Pembina Tingkat I (IV/b)',
                 'Pembina (IV/a)',
             ]),
+            'ttd' => fake()->imageUrl(200, 100, 'people', true, 'headmaster_signature'),
             'nip' => (string) fake()->unique()->numberBetween(100000000000000000, 999999999999999999),
             'is_active' => true,
         ];

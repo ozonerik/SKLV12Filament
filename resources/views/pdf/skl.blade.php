@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; line-height: 1.4; }
         .center { text-align: center; }
         .mt-24 { margin-top: 24px; }
         .mt-16 { margin-top: 16px; }
@@ -15,6 +15,21 @@
         .tbl { width: 100%; border-collapse: collapse; margin-top: 8px; }
         .tbl th, .tbl td { border: 1px solid #000; padding: 6px; font-size: 11px; }
         .tbl th { background: #f2f2f2; }
+        
+        /* CSS untuk area tanda tangan */
+        .signature-container {
+            float: right;
+            width: 250px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .signature-image {
+            height: 80px; /* Sesuaikan tinggi ttd */
+            margin: -10px 0; /* Menarik gambar agar agak menempel ke teks atas/bawah */
+        }
+        .spacer {
+            height: 80px;
+        }
     </style>
 </head>
 <body>
@@ -49,20 +64,16 @@
                 <td>: {{ $student?->name ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="label">NIS</td>
-                <td>: {{ $student?->nis ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="label">NISN</td>
-                <td>: {{ $student?->nisn ?? '-' }}</td>
+                <td class="label">NIS / NISN</td>
+                <td>: {{ $student?->nis ?? '-' }} / {{ $student?->nisn ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="label">Tempat/Tgl Lahir</td>
-                <td>: {{ $student?->pob ?? '-' }}, {{ optional($student?->dob)->format('d/m/Y') }}</td>
+                <td>: {{ $student?->pob ?? '-' }}, {{ $student?->dob ? \Carbon\Carbon::parse($student->dob)->format('d/m/Y') : '-' }}</td>
             </tr>
             <tr>
                 <td class="label">Jurusan</td>
-                <td>: {{ $major?->program_keahlian ?? '-' }}</td>
+                <td>: {{ $major?->name ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="label">Tahun Pelajaran</td>
@@ -72,7 +83,7 @@
     </div>
 
     <div class="mt-16">
-        <p class="center" style="font-size: 14px; font-weight: bold;">
+        <p class="center" style="font-size: 14px; font-weight: bold; border: 1px solid #000; padding: 10px;">
             DINYATAKAN: {{ strtoupper($skl->status) }}
         </p>
     </div>
@@ -109,17 +120,24 @@
         </table>
     </div>
 
-    <div class="mt-24" style="width: 100%;">
-        <div style="width: 50%; float: right; text-align: center;">
-            <div>{{ optional($skl->letter_date)->format('d/m/Y') }}</div>
-            <div class="mt-16">Kepala Sekolah,</div>
-            <div style="height: 72px;"></div>
-            <div style="font-weight: bold; text-decoration: underline;">
-                {{ $headmaster?->name ?? '-' }}
-            </div>
-            <div>NIP. {{ $headmaster?->nip ?? '-' }}</div>
+    {{-- Bagian Tanda Tangan --}}
+    <div class="signature-container">
+        <div>{{ $skl->letter_date ? \Carbon\Carbon::parse($skl->letter_date)->translatedFormat('d F Y') : now()->translatedFormat('d F Y') }}</div>
+        <div>Kepala Sekolah,</div>
+        
+        <div class="signature-wrapper">
+            @if($headmaster && $headmaster->ttd)
+                {{-- Menggunakan public_path agar DomPDF bisa akses file lokal --}}
+                <img src="{{ public_path('storage/' . $headmaster->ttd) }}" class="signature-image">
+            @else
+                <div class="spacer"></div>
+            @endif
         </div>
+
+        <div style="font-weight: bold; text-decoration: underline;">
+            {{ $headmaster?->name ?? '...........................................' }}
+        </div>
+        <div>NIP. {{ $headmaster?->nip ?? '-' }}</div>
     </div>
 </body>
 </html>
-

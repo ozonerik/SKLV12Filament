@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
+            $table->string('kode')->unique();
             $table->string('name');
             $table->enum('category', ['Umum', 'Kejuruan', 'Pilihan', 'Mulok']);
             $table->timestamps();

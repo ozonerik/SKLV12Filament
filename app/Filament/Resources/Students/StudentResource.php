@@ -44,15 +44,20 @@ class StudentResource extends Resource
                 TextInput::make('father_name')
                     ->required(),
                 Select::make('major_id')
-                    ->relationship('major', 'program_keahlian')
+                    ->relationship('major', 'konsentrasi_keahlian')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Select::make('school_year_id')
+                    ->relationship('schoolYear', 'name')
                     ->searchable()
                     ->preload()
                     ->required(),
                 TextInput::make('password')
                     ->password()
                     ->helperText('Biarkan kosong untuk memakai default password tanggal lahir (ddmmyyyy).')
-                    ->dehydrateStateUsing(fn (?string $state) => filled($state) ? $state : null)
-                    ->dehydrated(fn (?string $state) => filled($state)),
+                    ->dehydrateStateUsing(fn(?string $state) => filled($state) ? $state : null)
+                    ->dehydrated(fn(?string $state) => filled($state)),
             ]);
     }
 
@@ -74,8 +79,12 @@ class StudentResource extends Resource
                     ->searchable(),
                 TextColumn::make('father_name')
                     ->searchable(),
-                TextColumn::make('major.program_keahlian')
+                TextColumn::make('major.konsentrasi_keahlian')
                     ->label('Jurusan')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('schoolYear.name')
+                    ->label('Tahun Pelajaran')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')

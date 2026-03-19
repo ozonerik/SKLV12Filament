@@ -9,5 +9,5 @@ class Subject extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'category']; // Category: Umum, Kejuruan, Pilihan, Mulok
+    protected $fillable = ['kode', 'name', 'category']; // Category: Umum, Kejuruan, Pilihan, Mulok
 }

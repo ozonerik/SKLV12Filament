@@ -20,6 +20,7 @@ class AcademicSeeder extends Seeder
             [
                 'name' => 'Kepala Sekolah',
                 'rank' => 'Pembina (IV/a)',
+                'ttd' => 'path/to/signature.png',
                 'is_active' => true,
             ],
         );
@@ -31,10 +32,12 @@ class AcademicSeeder extends Seeder
             [$currentStartYear, $currentStartYear + 1],
         ];
 
+        // 1. Capture the school years after creating them
+        $schoolYears = [];
         foreach ($years as [$startYear, $endYear]) {
             $kode = mb_substr((string) $startYear, -2) . mb_substr((string) $endYear, -2);
 
-            SchoolYear::query()->updateOrCreate(
+            $schoolYears[] = SchoolYear::query()->updateOrCreate(
                 ['kode' => $kode],
                 [
                     'name' => "{$startYear}/{$endYear}",
@@ -42,15 +45,19 @@ class AcademicSeeder extends Seeder
                 ],
             );
         }
-
         // Majors (for students)
         if (! Major::query()->exists()) {
             Major::factory()->count(3)->create();
         }
 
         // Students
+        $activeSchoolYearId = end($schoolYears)->id;
         if (! Student::query()->exists()) {
-            Student::factory()->count(5)->create();
+            Student::factory()
+                ->count(5)
+                ->create([
+                    'school_year_id' => $activeSchoolYearId // Pass the required ID here
+                ]);
         }
 
         // Subjects
@@ -75,4 +82,3 @@ class AcademicSeeder extends Seeder
         });
     }
 }
-

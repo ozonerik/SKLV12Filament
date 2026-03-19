@@ -12,14 +12,14 @@ class SklSeeder extends Seeder
 {
     public function run(): void
     {
-        $schoolYearId = SchoolYear::query()->inRandomOrder()->value('id');
+        //$schoolYearId = SchoolYear::query()->inRandomOrder()->value('id');
 
-        Student::query()->get()->each(function (Student $student) use ($schoolYearId): void {
+        Student::query()->get()->each(function (Student $student) : void {
             Skl::query()->updateOrCreate(
                 ['student_id' => $student->id],
                 [
-                    'major_id' => $student->major_id,
-                    'school_year_id' => $schoolYearId,
+                    //'major_id' => $student->major_id,
+                    //'school_year_id' => $schoolYearId,
                     'letter_number' => sprintf('%03d/SKL/%s/%s', $student->id, now()->format('m'), now()->format('Y')),
                     'status' => 'Lulus',
                     'letter_date' => now()->toDateString(),

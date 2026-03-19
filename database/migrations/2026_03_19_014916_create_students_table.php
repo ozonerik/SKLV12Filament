@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('father_name');
             $table->string('password');
             $table->foreignId('major_id')->constrained();
+            $table->foreignId('school_year_id')->constrained();
             $table->timestamps();
         });
     }

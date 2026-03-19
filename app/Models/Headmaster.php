@@ -10,7 +10,7 @@ class Headmaster extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'rank', 'nip', 'is_active'];
+    protected $fillable = ['name', 'rank', 'nip', 'ttd', 'is_active'];
 
     public function schoolYears(): HasMany
     {

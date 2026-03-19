@@ -38,18 +38,6 @@ class SklResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required(),
-                Select::make('major_id')
-                    ->relationship('major', 'program_keahlian')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-                Select::make('school_year_id')
-                    ->relationship('schoolYear', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-                \Filament\Forms\Components\TextInput::make('letter_number')
-                    ->required(),
                 Select::make('status')
                     ->options(['Lulus' => 'Lulus', 'Tidak Lulus' => 'Tidak lulus'])
                     ->required(),
@@ -71,13 +59,14 @@ class SklResource extends Resource
                     ->label('Siswa')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('major.program_keahlian')
+                // Menampilkan Jurusan dari relasi Student -> Major
+                TextColumn::make('student.major.konsentrasi_keahlian')
                     ->label('Jurusan')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('schoolYear.name')
+                    ->sortable()
+                    ->searchable(),
+                // Menampilkan Tahun Pelajaran dari relasi Student -> SchoolYear
+                TextColumn::make('student.schoolYear.name')
                     ->label('Tahun Pelajaran')
-                    ->searchable()
                     ->sortable(),
                 TextColumn::make('letter_number')
                     ->searchable(),
