@@ -12,6 +12,9 @@
         table { width: 100%; border-collapse: collapse; }
         td { vertical-align: top; padding: 4px 0; }
         .label { width: 180px; }
+        .tbl { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .tbl th, .tbl td { border: 1px solid #000; padding: 6px; font-size: 11px; }
+        .tbl th { background: #f2f2f2; }
     </style>
 </head>
 <body>
@@ -72,6 +75,38 @@
         <p class="center" style="font-size: 14px; font-weight: bold;">
             DINYATAKAN: {{ strtoupper($skl->status) }}
         </p>
+    </div>
+
+    <div class="mt-16">
+        <p style="margin-bottom: 4px; font-weight: bold;">Transkrip Nilai</p>
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">No</th>
+                    <th>Mata Pelajaran</th>
+                    <th style="width: 80px;">Nilai</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse(($grades ?? []) as $i => $grade)
+                    <tr>
+                        <td class="center">{{ $i + 1 }}</td>
+                        <td>{{ $grade->subject?->name ?? '-' }}</td>
+                        <td class="center">{{ $grade->score }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="3" class="center">Belum ada data nilai.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="2" style="text-align: right;">Rata-rata</th>
+                    <th class="center">{{ number_format((float) ($averageScore ?? 0), 2, ',', '.') }}</th>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 
     <div class="mt-24" style="width: 100%;">

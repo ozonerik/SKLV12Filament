@@ -2,6 +2,7 @@
 
 namespace App\Filament\Siswa\Pages;
 
+use App\Models\Grade;
 use App\Models\Skl;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
@@ -40,6 +41,7 @@ class KelulusanDanSkl extends Page
     public function content(Schema $schema): Schema
     {
         $skl = $this->getSkl();
+        $average = $this->getAverageScore();
 
         return $schema->components([
             Section::make('Status Kelulusan')
@@ -55,6 +57,9 @@ class KelulusanDanSkl extends Page
                     \Filament\Infolists\Components\TextEntry::make('published_at')
                         ->label('Dibuka')
                         ->state($skl->published_at?->format('d/m/Y H:i')),
+                    \Filament\Infolists\Components\TextEntry::make('avg_score')
+                        ->label('Rata-rata Nilai')
+                        ->state(number_format($average, 2, ',', '.')),
                     \Filament\Infolists\Components\TextEntry::make('message')
                         ->label('')
                         ->state($skl->isPublished()
@@ -86,6 +91,12 @@ class KelulusanDanSkl extends Page
         $student = $skl->student()->with('major')->first();
         $schoolYear = $skl->schoolYear()->with('headmaster')->first();
         $major = $skl->major;
+        $grades = Grade::query()
+            ->where('student_id', $skl->student_id)
+            ->with('subject')
+            ->orderBy('subject_id')
+            ->get();
+        $average = (float) ($grades->avg('score') ?? 0);
 
         $pdf = Pdf::loadView('pdf.skl', [
             'skl' => $skl,
@@ -93,6 +104,8 @@ class KelulusanDanSkl extends Page
             'schoolYear' => $schoolYear,
             'major' => $major,
             'headmaster' => $schoolYear?->headmaster,
+            'grades' => $grades,
+            'averageScore' => $average,
         ])->setPaper('a4');
 
         return response()->streamDownload(
@@ -111,6 +124,20 @@ class KelulusanDanSkl extends Page
         return Skl::query()
             ->where('student_id', $student->getAuthIdentifier())
             ->firstOrFail();
+    }
+
+    protected function getAverageScore(): float
+    {
+        $student = Filament::auth()->user();
+
+        if (! $student) {
+            return 0.0;
+        }
+
+        // Pakai query avg() supaya ringan.
+        return (float) (Grade::query()
+            ->where('student_id', $student->getAuthIdentifier())
+            ->avg('score') ?? 0);
     }
 }
 

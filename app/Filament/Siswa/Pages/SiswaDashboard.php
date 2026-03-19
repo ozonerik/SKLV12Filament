@@ -10,8 +10,6 @@ class SiswaDashboard extends Dashboard
 {
     public function mount(): void
     {
-        parent::mount();
-
         $student = Filament::auth()->user();
 
         if (! $student) {
