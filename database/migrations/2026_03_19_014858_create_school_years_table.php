@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('school_years', function (Blueprint $table) {
             $table->id();
+            $table->string('kode')->unique(); // Contoh: 2425
             $table->string('name'); // Contoh: 2024/2025
             $table->foreignId('headmaster_id')->constrained('headmasters')->cascadeOnDelete();
             $table->timestamps();

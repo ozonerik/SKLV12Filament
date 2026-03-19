@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('nisn')->unique();
             $table->string('father_name');
             $table->string('password');
+            $table->foreignId('major_id')->constrained();
             $table->timestamps();
         });
     }

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('rank'); // Pangkat/Golongan
             $table->string('nip')->unique();
-            $table->enum('is_active', ['Aktif', 'Tidak Aktif'])->default('Aktif');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

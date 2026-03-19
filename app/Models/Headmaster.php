@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Headmaster extends Model
 {
-    protected $fillable = ['name', 'nip', 'rank', 'is_active'];
+    protected $fillable = ['name', 'rank', 'nip', 'is_active'];
 
     public function schoolYears(): HasMany
     {

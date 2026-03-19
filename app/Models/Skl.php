@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Skl extends Model
 {
     protected $fillable = [
-        'student_id', 'school_year_id', 'letter_number', 'status', 
+        'student_id', 'major_id','school_year_id', 'letter_number', 'status', 
         'letter_date', 'published_at', 'is_questionnaire_completed'
     ];
 
