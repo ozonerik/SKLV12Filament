@@ -22,6 +22,11 @@ class Skl extends Model
 
     public function student() { return $this->belongsTo(Student::class); }
 
+    public function major()
+    {
+        return $this->belongsTo(Major::class);
+    }
+
     public function schoolYear() { return $this->belongsTo(SchoolYear::class); }
     
     // Helper untuk cek apakah sudah bisa diakses

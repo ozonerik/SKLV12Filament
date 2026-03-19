@@ -10,4 +10,9 @@ class SchoolYear extends Model
     use HasFactory;
 
     protected $fillable = ['kode', 'name','headmaster_id'];
+
+    public function headmaster()
+    {
+        return $this->belongsTo(Headmaster::class);
+    }
 }

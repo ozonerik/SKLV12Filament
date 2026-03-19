@@ -3,11 +3,13 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Siswa\Pages\Auth\Login as SiswaLogin;
+use App\Filament\Siswa\Pages\IsiKuesioner;
+use App\Filament\Siswa\Pages\KelulusanDanSkl;
+use App\Filament\Siswa\Pages\SiswaDashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -33,7 +35,9 @@ class StudentPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Siswa/Resources'), for: 'App\\Filament\\Siswa\\Resources')
             ->discoverPages(in: app_path('Filament/Siswa/Pages'), for: 'App\\Filament\\Siswa\\Pages')
             ->pages([
-                Dashboard::class,
+                SiswaDashboard::class,
+                IsiKuesioner::class,
+                KelulusanDanSkl::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Siswa/Widgets'), for: 'App\\Filament\\Siswa\\Widgets')
             ->middleware([
