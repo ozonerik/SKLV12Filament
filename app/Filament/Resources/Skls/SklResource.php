@@ -20,6 +20,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
 
 class SklResource extends Resource
 {
@@ -42,6 +43,8 @@ class SklResource extends Resource
                     ->options(['Lulus' => 'Lulus', 'Tidak Lulus' => 'Tidak lulus'])
                     ->required(),
                 DatePicker::make('letter_date')
+                    ->required(),
+                TextInput::make('letter_number')
                     ->required(),
                 DateTimePicker::make('published_at')
                     ->required(),
