@@ -119,6 +119,16 @@ class StudentResource extends Resource
         ];
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Main';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 1;
+    }
+
     public static function getPages(): array
     {
         return [

@@ -104,6 +104,16 @@ class QuestionResource extends Resource
         ];
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Questionnaire';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 2;
+    }
+
     public static function getPages(): array
     {
         return [

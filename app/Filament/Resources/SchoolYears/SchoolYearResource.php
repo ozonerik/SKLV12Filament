@@ -84,6 +84,16 @@ class SchoolYearResource extends Resource
         ];
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Settings';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 3;
+    }
+
     public static function getPages(): array
     {
         return [

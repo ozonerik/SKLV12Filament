@@ -162,6 +162,16 @@ class SchoolResource extends Resource
         return [];
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Settings';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 1;
+    }
+
     public static function getPages(): array
     {
         return [
