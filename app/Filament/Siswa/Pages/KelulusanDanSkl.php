@@ -104,8 +104,34 @@ class KelulusanDanSkl extends Page
         $grades = Grade::query()
             ->where('student_id', $skl->student_id)
             ->with('subject')
-            ->orderBy('subject_id')
             ->get();
+
+        $categoryOrder = [
+            'Umum' => 1,
+            'Kejuruan' => 2,
+            'Pilihan' => 3,
+            'Mulok' => 4,
+        ];
+
+        $grades = $grades
+            ->sortBy(function (Grade $grade) use ($categoryOrder): array {
+                $category = (string) ($grade->subject?->category ?? '');
+
+                return [
+                    $categoryOrder[$category] ?? 99,
+                    (string) ($grade->subject?->kode ?? ''),
+                    (string) ($grade->subject?->name ?? ''),
+                ];
+            })
+            ->values();
+
+        $groupedGrades = collect([
+            'Umum' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Umum')->values(),
+            'Kejuruan' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Kejuruan')->values(),
+            'Pilihan' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Pilihan')->values(),
+            'Mulok' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Mulok')->values(),
+        ]);
+
         $average = (float) ($grades->avg('score') ?? 0);
         $verificationCode = $skl->ensureVerificationCode();
         $verificationUrl = route('skl.verify.show', ['code' => $verificationCode]);
@@ -125,6 +151,7 @@ class KelulusanDanSkl extends Page
             'major' => $major,
             'headmaster' => $headmaster, // Data Headmaster (termasuk kolom 'ttd')
             'grades' => $grades,
+            'groupedGrades' => $groupedGrades,
             'averageScore' => $average,
             'verificationCode' => $verificationCode,
             'verificationUrl' => $verificationUrl,

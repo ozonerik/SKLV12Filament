@@ -3,95 +3,80 @@
 <head>
     <meta charset="utf-8">
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; line-height: 1.4; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #000; line-height: 1.25; margin: 0; }
         .center { text-align: center; }
-        .mt-24 { margin-top: 24px; }
-        .mt-16 { margin-top: 16px; }
-        .title { font-size: 16px; font-weight: bold; }
-        .subtitle { font-size: 13px; }
-        .school-header { width: 100%; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
-        .school-logo { width: 70px; height: 70px; object-fit: contain; }
-        .school-title { font-size: 15px; font-weight: bold; text-transform: uppercase; }
-        .school-meta { font-size: 10px; }
-        table { width: 100%; border-collapse: collapse; }
-        td { vertical-align: top; padding: 4px 0; }
-        .label { width: 180px; }
-        .tbl { width: 100%; border-collapse: collapse; margin-top: 8px; }
-        .tbl th, .tbl td { border: 1px solid #000; padding: 6px; font-size: 11px; }
-        .tbl th { background: #f2f2f2; }
-        
-        /* CSS untuk area tanda tangan */
-        .signature-container {
-            float: right;
-            width: 250px;
-            text-align: center;
-            margin-top: 30px;
-        }
-        .signature-image {
-            height: 80px; /* Sesuaikan tinggi ttd */
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 16px;
-            z-index: 1;
-        }
-        .stamp-image {
-            width: 86px;
-            height: 86px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 8px;
-            z-index: 2;
-            opacity: 0.9;
-            object-fit: contain;
-        }
-        .signature-wrapper {
-            position: relative;
-            height: 104px;
-            margin: 4px 0;
-        }
-        .spacer {
-            height: 80px;
-        }
-
-        .verification-container {
-            width: 260px;
-            margin-top: 30px;
-            font-size: 10px;
-        }
-
-        .verification-qr {
-            width: 90px;
-            height: 90px;
-            border: 1px solid #000;
-            padding: 4px;
-        }
-
-        .small-muted {
-            font-size: 9px;
-            color: #333;
-        }
+        .kop { width: 100%; border-bottom: 2px solid #000; margin-bottom: 6px; }
+        .kop td { vertical-align: top; }
+        .logo { width: 72px; height: 72px; object-fit: contain; }
+        .kop-top { font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .kop-school { font-size: 34px; font-weight: 700; text-transform: uppercase; line-height: 1.05; }
+        .kop-address { font-size: 10px; }
+        .doc-title { margin-top: 8px; font-size: 31px; font-weight: 700; text-transform: uppercase; text-decoration: underline; }
+        .doc-number { font-size: 15px; margin-top: 2px; }
+        .paragraph { margin: 5px 0; }
+        .identity { width: 100%; margin-top: 4px; }
+        .identity td { padding: 0; vertical-align: top; }
+        .identity .label { width: 180px; }
+        .identity .colon { width: 10px; }
+        .status { text-align: center; font-size: 20px; font-weight: 700; text-transform: uppercase; margin: 1px 0 2px; }
+        .grade-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+        .grade-table th, .grade-table td { border: 1px solid #000; padding: 2px 5px; }
+        .grade-table thead th { text-align: center; font-weight: 700; }
+        .group-row td { font-weight: 700; background: #f5f5f5; }
+        .num { width: 34px; text-align: center; }
+        .score { width: 64px; text-align: center; }
+        .footer-note { margin-top: 6px; }
+        .footer-grid { width: 100%; margin-top: 6px; }
+        .footer-grid td { vertical-align: top; }
+        .verification-box { width: 180px; font-size: 9px; }
+        .verification-qr { width: 58px; height: 58px; border: 1px solid #000; padding: 2px; }
+        .sign-box { width: 240px; text-align: center; }
+        .signature-wrapper { position: relative; height: 105px; margin: 2px 0; }
+        .signature-image { position: absolute; left: 50%; transform: translateX(-50%); top: 12px; height: 80px; z-index: 1; }
+        .stamp-image { position: absolute; left: 50%; transform: translateX(-50%); top: 4px; width: 90px; height: 90px; z-index: 2; opacity: 0.9; object-fit: contain; }
+        .name-line { font-weight: 700; text-decoration: underline; }
+        .muted { color: #111; font-size: 9px; }
     </style>
 </head>
 <body>
-    <table class="school-header">
+    @php
+        $majorName = $major?->konsentrasi_keahlian ?? '-';
+        $programKeahlian = $major?->program_keahlian ?? '-';
+        $bidangKeahlian = $major?->bidang_keahlian ?? '-';
+        $city = 'Indramayu';
+
+        if (! empty($school?->address) && str_contains((string) $school->address, '-')) {
+            $parts = explode('-', (string) $school->address);
+            $city = trim((string) end($parts)) ?: $city;
+        }
+
+        $orderedCategories = [
+            'Umum' => '1. Kelompok Mapel Umum',
+            'Kejuruan' => '2. Kelompok Mapel Kejuruan',
+            'Pilihan' => '3. Kelompok Mapel Pilihan',
+            'Mulok' => '4. Kelompok Mapel Mulok',
+        ];
+    @endphp
+
+    <table class="kop">
         <tr>
-            <td style="width: 80px; text-align: left; vertical-align: middle;">
+            <td style="width: 80px; text-align: left;">
                 @if (! empty($school?->province_logo))
-                    <img src="{{ public_path('storage/' . $school->province_logo) }}" alt="Logo Provinsi" class="school-logo">
+                    <img src="{{ public_path('storage/' . $school->province_logo) }}" alt="Logo Provinsi" class="logo">
                 @endif
             </td>
-            <td class="center" style="vertical-align: middle;">
-                <div class="school-title">{{ $school?->name ?? 'SMK NEGERI' }}</div>
-                <div class="school-meta">{{ $school?->address ?? '-' }}</div>
-                <div class="school-meta">
-                    Kodepos {{ $school?->postal_code ?? '-' }}
+            <td class="center">
+                <div class="kop-top">Pemerintah Provinsi {{ strtoupper((string) ($school?->province ?? '-')) }}</div>
+                <div class="kop-top">Dinas Pendidikan</div>
+                <div class="kop-top">Kantor Cabang Dinas Pendidikan Wilayah {{ strtoupper((string) ($school?->kcd_wilayah ?? '-')) }}</div>
+                <div class="kop-school">{{ strtoupper((string) ($school?->name ?? 'SMK NEGERI')) }}</div>
+                <div class="kop-address">Alamat: {{ $school?->address ?? '-' }}, {{ $school?->postal_code ?? '-' }}</div>
+                <div class="kop-address">
                     @if (! empty($school?->phone))
-                        | Telp: {{ $school->phone }}
+                        Telp. {{ $school->phone }}
                     @endif
                     @if (! empty($school?->email))
-                        | Email: {{ $school->email }}
+                        | Email. {{ $school->email }}
                     @endif
                     @if (! empty($school?->website))
                         | Website: {{ $school->website }}
@@ -102,125 +87,108 @@
         </tr>
     </table>
 
-    <div class="center">
-        <div class="title">SURAT KETERANGAN LULUS (SKL)</div>
-        <div class="subtitle">Nomor: {{ $skl->letter_number }}</div>
-    </div>
+    <div class="center doc-title">Surat Keterangan Lulus</div>
+    <div class="center doc-number">Nomor: {{ $skl->letter_number }}</div>
 
-    <div class="mt-24">
-        <p>Yang bertanda tangan di bawah ini:</p>
-        <table>
-            <tr>
-                <td class="label">Nama</td>
-                <td>: {{ $headmaster?->name ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="label">NIP</td>
-                <td>: {{ $headmaster?->nip ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Pangkat/Golongan</td>
-                <td>: {{ $headmaster?->rank ?? '-' }}</td>
-            </tr>
-        </table>
-    </div>
+    <p class="paragraph">
+        Yang bertanda tangan di bawah ini Kepala {{ $school?->name ?? 'Sekolah' }}, {{ $city }},
+        {{ $school?->province ?? '-' }}, dengan ini menerangkan:
+    </p>
 
-    <div class="mt-16">
-        <p>Menerangkan bahwa:</p>
-        <table>
-            <tr>
-                <td class="label">Nama</td>
-                <td>: {{ $student?->name ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="label">NIS / NISN</td>
-                <td>: {{ $student?->nis ?? '-' }} / {{ $student?->nisn ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Tempat/Tgl Lahir</td>
-                <td>: {{ $student?->pob ?? '-' }}, {{ $student?->dob ? \Carbon\Carbon::parse($student->dob)->format('d/m/Y') : '-' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Jurusan</td>
-                <td>: {{ $major?->konsentrasi_keahlian ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="label">Tahun Pelajaran</td>
-                <td>: {{ $schoolYear?->name ?? '-' }}</td>
-            </tr>
-        </table>
-    </div>
+    <table class="identity">
+        <tr><td class="label">Nama</td><td class="colon">:</td><td><strong>{{ strtoupper((string) ($student?->name ?? '-')) }}</strong></td></tr>
+        <tr><td class="label">Tempat, Tanggal Lahir</td><td class="colon">:</td><td>{{ $student?->pob ?? '-' }}, {{ $student?->dob ? \Carbon\Carbon::parse($student->dob)->translatedFormat('d F Y') : '-' }}</td></tr>
+        <tr><td class="label">Nomor Induk Peserta Didik</td><td class="colon">:</td><td>{{ $student?->nis ?? '-' }}</td></tr>
+        <tr><td class="label">Nomor Induk Siswa Nasional</td><td class="colon">:</td><td>{{ $student?->nisn ?? '-' }}</td></tr>
+        <tr><td class="label">Bidang Keahlian</td><td class="colon">:</td><td>{{ $bidangKeahlian }}</td></tr>
+        <tr><td class="label">Program Keahlian</td><td class="colon">:</td><td>{{ $programKeahlian }}</td></tr>
+        <tr><td class="label">Konsentrasi Keahlian</td><td class="colon">:</td><td>{{ $majorName }}</td></tr>
+    </table>
 
-    <div class="mt-16">
-        <p class="center" style="font-size: 14px; font-weight: bold; border: 1px solid #000; padding: 10px;">
-            DINYATAKAN: {{ strtoupper($skl->status) }}
-        </p>
-    </div>
+    <p class="paragraph">Berdasarkan kriteria kelulusan peserta didik yang sudah ditetapkan, maka yang bersangkutan dinyatakan:</p>
+    <div class="status">{{ $skl->status }}</div>
+    <p class="paragraph">Dengan hasil sebagai berikut:</p>
 
-    <div class="mt-16">
-        <p style="margin-bottom: 4px; font-weight: bold;">Transkrip Nilai</p>
-        <table class="tbl">
-            <thead>
-                <tr>
-                    <th style="width: 40px;">No</th>
-                    <th>Mata Pelajaran</th>
-                    <th style="width: 80px;">Nilai</th>
+    <table class="grade-table">
+        <thead>
+            <tr>
+                <th class="num">No.</th>
+                <th>Mata Pelajaran</th>
+                <th class="score">Nilai</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($orderedCategories as $category => $categoryLabel)
+                @php
+                    $categoryGrades = $groupedGrades[$category] ?? collect();
+                @endphp
+
+                <tr class="group-row">
+                    <td colspan="3">{{ $categoryLabel }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @forelse(($grades ?? []) as $i => $grade)
+
+                @if ($categoryGrades->isEmpty())
                     <tr>
-                        <td class="center">{{ $i + 1 }}</td>
-                        <td>{{ $grade->subject?->name ?? '-' }}</td>
-                        <td class="center">{{ $grade->score }}</td>
+                        <td class="num">-</td>
+                        <td>Tidak ada data mata pelajaran</td>
+                        <td class="score">-</td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="3" class="center">Belum ada data nilai.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-            <tfoot>
+                @else
+                    @foreach($categoryGrades as $idx => $grade)
+                        <tr>
+                            <td class="num">{{ $idx + 1 }}</td>
+                            <td>{{ $grade->subject?->name ?? '-' }}</td>
+                            <td class="score">{{ number_format((float) $grade->score, 2, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                @endif
+            @empty
                 <tr>
-                    <th colspan="2" style="text-align: right;">Rata-rata</th>
-                    <th class="center">{{ number_format((float) ($averageScore ?? 0), 2, ',', '.') }}</th>
+                    <td class="num">-</td>
+                    <td>Belum ada data nilai.</td>
+                    <td class="score">-</td>
                 </tr>
-            </tfoot>
-        </table>
-    </div>
+            @endforelse
 
-    <div class="verification-container">
-        <div style="font-weight: bold; margin-bottom: 6px;">Verifikasi SKL</div>
-        <img src="{{ $qrCodeDataUri }}" alt="QR Verifikasi SKL" class="verification-qr">
-        <div style="margin-top: 6px;">Kode: {{ $verificationCode }}</div>
-        <div class="small-muted">
-            Cek validitas:
-            <a href="{{ $verificationUrl }}">{{ $verificationUrl }}</a>
-        </div>
-    </div>
+            <tr class="group-row">
+                <td colspan="2" style="text-align: right;">Rata-rata</td>
+                <td class="score">{{ number_format((float) ($averageScore ?? 0), 2, ',', '.') }}</td>
+            </tr>
+        </tbody>
+    </table>
 
-    {{-- Bagian Tanda Tangan --}}
-    <div class="signature-container">
-        <div>{{ $skl->letter_date ? \Carbon\Carbon::parse($skl->letter_date)->translatedFormat('d F Y') : now()->translatedFormat('d F Y') }}</div>
-        <div>Kepala Sekolah,</div>
-        
-        <div class="signature-wrapper">
-            @if($headmaster && $headmaster->ttd)
-                {{-- Menggunakan public_path agar DomPDF bisa akses file lokal --}}
-                <img src="{{ public_path('storage/' . $headmaster->ttd) }}" class="signature-image">
-            @else
-                <div class="spacer"></div>
-            @endif
+    <p class="footer-note">
+        Surat Keterangan ini bersifat sementara dan berlaku sampai diterbitkannya ijazah untuk peserta didik yang bersangkutan.
+        Demikian surat keterangan ini diberikan agar dapat dipergunakan sebagaimana mestinya.
+    </p>
 
-            @if (! empty($school?->school_stamp))
-                <img src="{{ public_path('storage/' . $school->school_stamp) }}" alt="Stamp Sekolah" class="stamp-image">
-            @endif
-        </div>
+    <table class="footer-grid">
+        <tr>
+            <td>
+                <div class="verification-box">
+                    <img src="{{ $qrCodeDataUri }}" alt="QR Verifikasi SKL" class="verification-qr">
+                    <div class="muted">Kode: {{ $verificationCode }}</div>
+                    <div class="muted">Validasi: {{ $verificationUrl }}</div>
+                </div>
+            </td>
+            <td class="sign-box">
+                <div>{{ $city }}, {{ $skl->letter_date ? \Carbon\Carbon::parse($skl->letter_date)->translatedFormat('d F Y') : now()->translatedFormat('d F Y') }}</div>
+                <div>Kepala Sekolah,</div>
 
-        <div style="font-weight: bold; text-decoration: underline;">
-            {{ $headmaster?->name ?? '...........................................' }}
-        </div>
-        <div>NIP. {{ $headmaster?->nip ?? '-' }}</div>
-    </div>
+                <div class="signature-wrapper">
+                    @if($headmaster && $headmaster->ttd)
+                        <img src="{{ public_path('storage/' . $headmaster->ttd) }}" class="signature-image" alt="TTD Kepala Sekolah">
+                    @endif
+                    @if (! empty($school?->school_stamp))
+                        <img src="{{ public_path('storage/' . $school->school_stamp) }}" alt="Stamp Sekolah" class="stamp-image">
+                    @endif
+                </div>
+
+                <div class="name-line">{{ $headmaster?->name ?? '...........................................' }}</div>
+                <div>NIP. {{ $headmaster?->nip ?? '-' }}</div>
+                <div>{{ $headmaster?->rank ?? '-' }}</div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
