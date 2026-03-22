@@ -53,6 +53,22 @@ class GradeResource extends Resource
         return $table
             ->recordTitleAttribute('id')
             ->columns([
+                TextColumn::make('student.nisn')
+                    ->label('NISN')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('student.nis')
+                    ->label('NIS')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('student.name')
+                    ->label('Siswa')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('student.schoolyear.name')
+                    ->label('Tahun Ajaran')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('student.name')
                     ->label('Siswa')
                     ->searchable()
