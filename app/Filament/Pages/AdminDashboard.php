@@ -7,6 +7,7 @@ use App\Filament\Widgets\QuestionDistributionPieChart;
 use App\Filament\Widgets\SklDownloadChart;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\School;
 use App\Models\SchoolYear;
 use App\Models\Skl;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -112,9 +113,11 @@ class AdminDashboard extends Dashboard
             ->count();
 
         $questionDistributions = $this->getQuestionDistributions($schoolYearId);
+        $school = School::query()->first();
 
         $pdf = Pdf::loadView('pdf.admin-dashboard-report', [
             'generatedAt' => now(),
+            'school' => $school,
             'schoolYearName' => $schoolYearName,
             'graduationData' => [
                 'Lulus' => $lulus,

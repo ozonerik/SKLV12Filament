@@ -59,9 +59,50 @@
         
         .question-section { page-break-inside: avoid; }
         .small { font-size: 9px; color: #666; margin-bottom: 8px; }
+        .school-header { border: 1px solid #e5e7eb; border-radius: 4px; padding: 10px; margin-bottom: 10px; }
+        .school-header-table { width: 100%; border-collapse: collapse; }
+        .school-header-table td { border: none; vertical-align: top; padding: 0; }
+        .school-logo-wrap { width: 78px; text-align: left; }
+        .school-logo { width: 68px; height: 68px; object-fit: contain; }
+        .school-name { font-size: 14px; font-weight: 700; }
+        .school-info { font-size: 10px; color: #333; }
     </style>
 </head>
 <body>
+    <div class="school-header">
+        <table class="school-header-table">
+            <tr>
+                <td class="school-logo-wrap">
+                    @if (! empty($school?->province_logo))
+                        <img src="{{ public_path('storage/' . $school->province_logo) }}" alt="Logo Provinsi" class="school-logo">
+                    @endif
+                </td>
+                <td>
+                    <div class="school-name">{{ $school?->name ?? '-' }}</div>
+                    <div class="school-info">{{ $school?->address ?? '-' }}</div>
+                    <div class="school-info">
+                        Kodepos {{ $school?->postal_code ?? '-' }}
+                        @if (! empty($school?->province))
+                            | Provinsi: {{ $school->province }}
+                        @endif
+                        @if (! empty($school?->kcd_wilayah))
+                            | KCD Wilayah: {{ $school->kcd_wilayah }}
+                        @endif
+                        @if (! empty($school?->phone))
+                            | Telp: {{ $school->phone }}
+                        @endif
+                        @if (! empty($school?->email))
+                            | Email: {{ $school->email }}
+                        @endif
+                        @if (! empty($school?->website))
+                            | Website: {{ $school->website }}
+                        @endif
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
     <h1>Laporan Dashboard Admin</h1>
     <div class="meta">Tahun Pelajaran: <strong>{{ $schoolYearName }}</strong></div>
     <div class="meta">Digenerate: {{ $generatedAt->format('d/m/Y H:i') }}</div>

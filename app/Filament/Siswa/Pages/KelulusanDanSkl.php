@@ -3,6 +3,7 @@
 namespace App\Filament\Siswa\Pages;
 
 use App\Models\Grade;
+use App\Models\School;
 use App\Models\Skl;
 use Barryvdh\DomPDF\Facade\Pdf;
 use chillerlan\QRCode\Output\QROutputInterface;
@@ -108,6 +109,7 @@ class KelulusanDanSkl extends Page
         $average = (float) ($grades->avg('score') ?? 0);
         $verificationCode = $skl->ensureVerificationCode();
         $verificationUrl = route('skl.verify.show', ['code' => $verificationCode]);
+        $school = School::query()->first();
 
         $qrCodeDataUri = (new QRCode(new QROptions([
             'outputType' => QROutputInterface::GDIMAGE_PNG,
@@ -127,6 +129,7 @@ class KelulusanDanSkl extends Page
             'verificationCode' => $verificationCode,
             'verificationUrl' => $verificationUrl,
             'qrCodeDataUri' => $qrCodeDataUri,
+            'school' => $school,
         ])->setPaper('a4');
 
         $skl->forceFill([

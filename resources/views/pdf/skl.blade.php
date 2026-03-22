@@ -9,6 +9,10 @@
         .mt-16 { margin-top: 16px; }
         .title { font-size: 16px; font-weight: bold; }
         .subtitle { font-size: 13px; }
+        .school-header { width: 100%; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
+        .school-logo { width: 70px; height: 70px; object-fit: contain; }
+        .school-title { font-size: 15px; font-weight: bold; text-transform: uppercase; }
+        .school-meta { font-size: 10px; }
         table { width: 100%; border-collapse: collapse; }
         td { vertical-align: top; padding: 4px 0; }
         .label { width: 180px; }
@@ -26,6 +30,12 @@
         .signature-image {
             height: 80px; /* Sesuaikan tinggi ttd */
             margin: -10px 0; /* Menarik gambar agar agak menempel ke teks atas/bawah */
+        }
+        .stamp-image {
+            height: 72px;
+            margin-top: 6px;
+            margin-bottom: 2px;
+            object-fit: contain;
         }
         .spacer {
             height: 80px;
@@ -51,6 +61,33 @@
     </style>
 </head>
 <body>
+    <table class="school-header">
+        <tr>
+            <td style="width: 80px; text-align: left; vertical-align: middle;">
+                @if (! empty($school?->province_logo))
+                    <img src="{{ public_path('storage/' . $school->province_logo) }}" alt="Logo Provinsi" class="school-logo">
+                @endif
+            </td>
+            <td class="center" style="vertical-align: middle;">
+                <div class="school-title">{{ $school?->name ?? 'SMK NEGERI' }}</div>
+                <div class="school-meta">{{ $school?->address ?? '-' }}</div>
+                <div class="school-meta">
+                    Kodepos {{ $school?->postal_code ?? '-' }}
+                    @if (! empty($school?->phone))
+                        | Telp: {{ $school->phone }}
+                    @endif
+                    @if (! empty($school?->email))
+                        | Email: {{ $school->email }}
+                    @endif
+                    @if (! empty($school?->website))
+                        | Website: {{ $school->website }}
+                    @endif
+                </div>
+            </td>
+            <td style="width: 80px;"></td>
+        </tr>
+    </table>
+
     <div class="center">
         <div class="title">SURAT KETERANGAN LULUS (SKL)</div>
         <div class="subtitle">Nomor: {{ $skl->letter_number }}</div>
@@ -166,6 +203,9 @@
             {{ $headmaster?->name ?? '...........................................' }}
         </div>
         <div>NIP. {{ $headmaster?->nip ?? '-' }}</div>
+        @if (! empty($school?->school_stamp))
+            <img src="{{ public_path('storage/' . $school->school_stamp) }}" alt="Stamp Sekolah" class="stamp-image">
+        @endif
     </div>
 </body>
 </html>
