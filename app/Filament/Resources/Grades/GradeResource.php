@@ -36,7 +36,7 @@ class GradeResource extends Resource
                     ->preload()
                     ->required(),
                 Select::make('subject_id')
-                    ->relationship('subject', 'name')
+                    ->relationship('subject', 'kode')
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -57,7 +57,7 @@ class GradeResource extends Resource
                     ->label('Siswa')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('subject.name')
+                TextColumn::make('subject.kode')
                     ->label('Mata Pelajaran')
                     ->searchable()
                     ->sortable(),

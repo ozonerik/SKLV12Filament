@@ -44,7 +44,7 @@ class StudentResource extends Resource
                 TextInput::make('father_name')
                     ->required(),
                 Select::make('major_id')
-                    ->relationship('major', 'konsentrasi_keahlian')
+                    ->relationship('major', 'kode_jurusan')
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -79,7 +79,7 @@ class StudentResource extends Resource
                     ->searchable(),
                 TextColumn::make('father_name')
                     ->searchable(),
-                TextColumn::make('major.konsentrasi_keahlian')
+                TextColumn::make('major.kode_jurusan')
                     ->label('Jurusan')
                     ->searchable()
                     ->sortable(),
