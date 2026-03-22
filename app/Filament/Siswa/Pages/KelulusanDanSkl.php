@@ -5,6 +5,9 @@ namespace App\Filament\Siswa\Pages;
 use App\Models\Grade;
 use App\Models\Skl;
 use Barryvdh\DomPDF\Facade\Pdf;
+use chillerlan\QRCode\Output\QROutputInterface;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Pages\Page;
@@ -103,6 +106,15 @@ class KelulusanDanSkl extends Page
             ->orderBy('subject_id')
             ->get();
         $average = (float) ($grades->avg('score') ?? 0);
+        $verificationCode = $skl->ensureVerificationCode();
+        $verificationUrl = route('skl.verify.show', ['code' => $verificationCode]);
+
+        $qrCodeDataUri = (new QRCode(new QROptions([
+            'outputType' => QROutputInterface::GDIMAGE_PNG,
+            'eccLevel' => QRCode::ECC_M,
+            'scale' => 5,
+            'outputBase64' => true,
+        ])))->render($verificationUrl);
 
         $pdf = Pdf::loadView('pdf.skl', [
             'skl' => $skl,
@@ -112,6 +124,9 @@ class KelulusanDanSkl extends Page
             'headmaster' => $headmaster, // Data Headmaster (termasuk kolom 'ttd')
             'grades' => $grades,
             'averageScore' => $average,
+            'verificationCode' => $verificationCode,
+            'verificationUrl' => $verificationUrl,
+            'qrCodeDataUri' => $qrCodeDataUri,
         ])->setPaper('a4');
 
         return response()->streamDownload(

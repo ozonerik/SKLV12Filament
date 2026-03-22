@@ -30,6 +30,24 @@
         .spacer {
             height: 80px;
         }
+
+        .verification-container {
+            width: 260px;
+            margin-top: 30px;
+            font-size: 10px;
+        }
+
+        .verification-qr {
+            width: 90px;
+            height: 90px;
+            border: 1px solid #000;
+            padding: 4px;
+        }
+
+        .small-muted {
+            font-size: 9px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -118,6 +136,16 @@
                 </tr>
             </tfoot>
         </table>
+    </div>
+
+    <div class="verification-container">
+        <div style="font-weight: bold; margin-bottom: 6px;">Verifikasi SKL</div>
+        <img src="{{ $qrCodeDataUri }}" alt="QR Verifikasi SKL" class="verification-qr">
+        <div style="margin-top: 6px;">Kode: {{ $verificationCode }}</div>
+        <div class="small-muted">
+            Cek validitas:
+            <a href="{{ $verificationUrl }}">{{ $verificationUrl }}</a>
+        </div>
     </div>
 
     {{-- Bagian Tanda Tangan --}}
