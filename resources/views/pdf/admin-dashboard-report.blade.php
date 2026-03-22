@@ -21,7 +21,7 @@
         .chart-row { display: flex; margin-bottom: 8px; align-items: center; page-break-inside: avoid; }
         .chart-label { width: 100px; font-weight: 600; color: #374151; font-size: 10px; }
         .chart-bar { flex: 1; background: #e5e7eb; height: 24px; margin: 0 8px; border-radius: 3px; position: relative; overflow: hidden; }
-        .chart-bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; color: white; font-size: 9px; font-weight: 600; }
+        .chart-bar-fill { height: 100%; display: flex; align-items: center; justify-content: center; color: #000; font-size: 9px; font-weight: 600; }
         .chart-value { width: 60px; text-align: right; color: #111; font-weight: 600; font-size: 10px; }
         
         .bar-green { background: #10B981; }
