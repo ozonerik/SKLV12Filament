@@ -130,7 +130,7 @@ class KelulusanDanSkl extends Page
             'verificationUrl' => $verificationUrl,
             'qrCodeDataUri' => $qrCodeDataUri,
             'school' => $school,
-        ])->setPaper('a4');
+        ])->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
         $skl->forceFill([
             'downloaded_at' => now(),

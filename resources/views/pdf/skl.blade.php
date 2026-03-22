@@ -29,13 +29,27 @@
         }
         .signature-image {
             height: 80px; /* Sesuaikan tinggi ttd */
-            margin: -10px 0; /* Menarik gambar agar agak menempel ke teks atas/bawah */
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 16px;
+            z-index: 1;
         }
         .stamp-image {
-            height: 72px;
-            margin-top: 6px;
-            margin-bottom: 2px;
+            width: 86px;
+            height: 86px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 8px;
+            z-index: 2;
+            opacity: 0.9;
             object-fit: contain;
+        }
+        .signature-wrapper {
+            position: relative;
+            height: 104px;
+            margin: 4px 0;
         }
         .spacer {
             height: 80px;
@@ -197,15 +211,16 @@
             @else
                 <div class="spacer"></div>
             @endif
+
+            @if (! empty($school?->school_stamp))
+                <img src="{{ public_path('storage/' . $school->school_stamp) }}" alt="Stamp Sekolah" class="stamp-image">
+            @endif
         </div>
 
         <div style="font-weight: bold; text-decoration: underline;">
             {{ $headmaster?->name ?? '...........................................' }}
         </div>
         <div>NIP. {{ $headmaster?->nip ?? '-' }}</div>
-        @if (! empty($school?->school_stamp))
-            <img src="{{ public_path('storage/' . $school->school_stamp) }}" alt="Stamp Sekolah" class="stamp-image">
-        @endif
     </div>
 </body>
 </html>
