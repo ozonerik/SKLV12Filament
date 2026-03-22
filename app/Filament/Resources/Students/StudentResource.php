@@ -36,7 +36,10 @@ class StudentResource extends Resource
                 TextInput::make('pob')
                     ->required(),
                 DatePicker::make('dob')
-                    ->required(),
+                        ->native(false)
+                        ->locale('id')
+                    ->required()
+                    ->displayFormat('d/m/Y'),
                 TextInput::make('nis')
                     ->required(),
                 TextInput::make('nisn')
@@ -71,7 +74,7 @@ class StudentResource extends Resource
                 TextColumn::make('pob')
                     ->searchable(),
                 TextColumn::make('dob')
-                    ->date()
+                    ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('nis')
                     ->searchable(),
@@ -88,11 +91,11 @@ class StudentResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

@@ -40,7 +40,7 @@ class PublicSklVerificationController extends Controller
         }
 
         $skl = Skl::query()
-            ->with(['student.major', 'student.schoolYear'])
+            ->with(['student.major', 'student.schoolYear', 'student.grades'])
             ->where('verification_code', $code)
             ->first();
 

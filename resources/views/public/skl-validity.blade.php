@@ -139,14 +139,17 @@
                     </div>
                     <div class="px-8 py-6 divide-y divide-gray-100">
                         @php
+                            $avgScore = $skl->student?->grades->avg('score');
                             $rows = [
                                 ['label' => 'Kode Verifikasi', 'icon' => 'fa-key',          'value' => $skl->verification_code],
                                 ['label' => 'Nomor SKL',       'icon' => 'fa-file-alt',      'value' => $skl->letter_number ?? '-'],
+                                ['label' => 'Tanggal Surat',   'icon' => 'fa-calendar-day',  'value' => $skl->letter_date?->format('d/m/Y') ?? '-'],
                                 ['label' => 'Nama Siswa',      'icon' => 'fa-user',          'value' => $skl->student?->name ?? '-'],
                                 ['label' => 'NISN',            'icon' => 'fa-id-badge',      'value' => $skl->student?->nisn ?? '-'],
                                 ['label' => 'Jurusan',         'icon' => 'fa-book',          'value' => $skl->student?->major?->konsentrasi_keahlian ?? '-'],
                                 ['label' => 'Tahun Pelajaran', 'icon' => 'fa-calendar-alt',  'value' => $skl->student?->schoolYear?->name ?? '-'],
                                 ['label' => 'Status Kelulusan','icon' => 'fa-graduation-cap','value' => $skl->status ?? '-'],
+                                ['label' => 'Rata-rata Nilai', 'icon' => 'fa-star-half-alt', 'value' => $avgScore !== null ? number_format($avgScore, 2) : '-'],
                                 ['label' => 'Waktu Publikasi', 'icon' => 'fa-clock',         'value' => $skl->published_at?->format('d/m/Y H:i') ?? '-'],
                             ];
                         @endphp

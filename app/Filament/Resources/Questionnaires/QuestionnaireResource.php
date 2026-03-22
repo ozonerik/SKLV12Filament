@@ -39,9 +39,15 @@ class QuestionnaireResource extends Resource
                 Textarea::make('description')
                     ->columnSpanFull(),
                 DatePicker::make('start_date')
-                    ->required(),
+                        ->native(false)
+                        ->locale('id')
+                    ->required()
+                    ->displayFormat('d/m/Y'),
                 DatePicker::make('end_date')
-                    ->required(),
+                        ->native(false)
+                        ->locale('id')
+                    ->required()
+                    ->displayFormat('d/m/Y'),
                 Toggle::make('is_active')
                     ->required(),
             ]);
@@ -55,19 +61,19 @@ class QuestionnaireResource extends Resource
                 TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('start_date')
-                    ->date()
+                    ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('end_date')
-                    ->date()
+                    ->date('d/m/Y')
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->boolean(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
