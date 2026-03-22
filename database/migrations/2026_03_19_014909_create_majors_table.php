@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('bidang_keahlian');
             $table->string('program_keahlian');
             $table->string('konsentrasi_keahlian');
+            $table->string('kode_jurusan')->unique();
             $table->timestamps();
         });
     }

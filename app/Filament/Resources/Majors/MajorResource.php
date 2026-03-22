@@ -35,6 +35,9 @@ class MajorResource extends Resource
                     ->required(),
                 TextInput::make('konsentrasi_keahlian')
                     ->required(),
+                TextInput::make('kode_jurusan')
+                    ->required()
+                    ->unique(ignorable: fn (?Major $record) => $record),
             ]);
     }
 
@@ -48,6 +51,8 @@ class MajorResource extends Resource
                 TextColumn::make('program_keahlian')
                     ->searchable(),
                 TextColumn::make('konsentrasi_keahlian')
+                    ->searchable(),
+                TextColumn::make('kode_jurusan')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

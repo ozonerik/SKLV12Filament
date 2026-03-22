@@ -27,6 +27,7 @@ class MajorFactory extends Factory
             ]),
             'program_keahlian' => $program,
             'konsentrasi_keahlian' => fake()->words(asText: true),
+            'kode_jurusan' => strtoupper(substr($program, 0, 3)) . '-' . fake()->unique()->numberBetween(100, 999),
         ];
     }
 }

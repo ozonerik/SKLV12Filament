@@ -15,17 +15,7 @@ class SubjectFactory extends Factory
     public function definition(): array
     {
         return [
-            'kode' => fake()->unique()->randomElement([
-                'BIND',
-                'MAT',
-                'BING',
-                'PAI',
-                'PKN',
-                'SEJ',
-                'INFO',
-                'KK',
-                'MLK',
-            ]) . ' ' . fake()->randomElement(['', '1', '2', '3']),
+            'kode' => strtoupper(fake()->lexify('???')) . '-' . fake()->unique()->numberBetween(100, 999),
             'name' => fake()->unique()->randomElement([
                 'Bahasa Indonesia',
                 'Matematika',

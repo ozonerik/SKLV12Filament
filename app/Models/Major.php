@@ -9,7 +9,7 @@ class Major extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['bidang_keahlian', 'program_keahlian', 'konsentrasi_keahlian'];
+    protected $fillable = ['bidang_keahlian', 'program_keahlian', 'konsentrasi_keahlian','kode_jurusan'];
 
     public function students()
     {
