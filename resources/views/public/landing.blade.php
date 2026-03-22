@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Informasi Kelulusan - SMKN 1 Krangkeng</title>
+    <title>Sistem Informasi Kelulusan - {{ $school?->name ?? 'SMKN 1 Krangkeng' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -43,11 +43,19 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-blue-900 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
+                    @if (! empty($school?->school_logo))
+                        <img
+                            src="{{ asset('storage/' . $school->school_logo) }}"
+                            alt="Logo Sekolah"
+                            class="w-12 h-12 rounded-full object-cover bg-white border border-blue-100"
+                        >
+                    @else
+                        <div class="w-12 h-12 bg-blue-900 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                    @endif
                     <div>
-                        <h1 class="text-blue-900 font-bold text-lg leading-tight">SMKN 1 KRANGKENG</h1>
+                        <h1 class="text-blue-900 font-bold text-lg leading-tight">{{ strtoupper((string) ($school?->name ?? 'SMKN 1 Krangkeng')) }}</h1>
                         <p class="text-xs text-gray-500 font-medium">Sistem Informasi Kelulusan</p>
                     </div>
                 </div>
@@ -175,8 +183,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center border-b border-gray-800 pb-8">
                 <div class="mb-4 md:mb-0 text-center md:text-left">
-                    <h4 class="text-white font-bold text-xl">SMKN 1 Krangkeng</h4>
-                    <p class="text-sm">Mewujudkan insan yang berakhlak mulia dan kompeten.</p>
+                    <h4 class="text-white font-bold text-xl">{{ $school?->name ?? 'SMKN 1 Krangkeng' }}</h4>
+                    <p class="text-sm">{{ $school?->vision ?? 'Mewujudkan insan yang berakhlak mulia dan kompeten.' }}</p>
                 </div>
                 <div class="flex space-x-6 text-2xl">
                     <a href="#" class="hover:text-white" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
@@ -184,8 +192,8 @@
                     <a href="#" class="hover:text-white" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
-            <div class="mt-8 text-center text-xs">
-                &copy; {{ date('Y') }} SMKN 1 Krangkeng. All Rights Reserved.
+                <div class="mt-8 text-center text-xs">
+                    &copy; {{ date('Y') }} {{ $school?->name ?? 'SMKN 1 Krangkeng' }}. All Rights Reserved.
             </div>
         </div>
     </footer>

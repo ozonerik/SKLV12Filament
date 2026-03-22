@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #000; line-height: 1.25; margin: 0; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #000; line-height: 1.25; margin: 0; padding-bottom: 4cm; }
         .center { text-align: center; }
         .kop { width: 100%; border-bottom: 2px solid #000; margin-bottom: 6px; }
         .kop td { vertical-align: top; }
@@ -30,11 +30,35 @@
         .footer-grid td { vertical-align: top; }
         .verification-box { width: 180px; font-size: 9px; }
         .verification-qr { width: 58px; height: 58px; border: 1px solid #000; padding: 2px; }
-        .sign-box { width: 240px; text-align: center; }
-        .signature-wrapper { position: relative; height: 105px; margin: 2px 0; }
-        .signature-image { position: absolute; left: 50%; transform: translateX(-50%); top: 12px; height: 80px; z-index: 1; }
-        .stamp-image { position: absolute; left: 50%; transform: translateX(-50%); top: 4px; width: 90px; height: 90px; z-index: 2; opacity: 0.9; object-fit: contain; }
-        .name-line { font-weight: 700; text-decoration: underline; }
+        .sign-box { text-align: center; }
+        .sign-right { text-align: right; }
+        .footer-verification {
+            position: fixed;
+            bottom: 1cm;
+            left: 0;
+            right: 0;
+            border-top: 1px solid #999;
+            padding-top: 6px;
+        }
+        .signature-wrapper { position: relative; height: 3.5cm; margin: 0; overflow: visible; }
+        .signature-image {
+            position: absolute;
+            left: calc(50% - 0.5cm);
+            top: 0.45cm;
+            width: auto;
+            height: 2.5cm;
+            z-index: 2;
+        }
+        .stamp-image {
+            position: absolute;
+            left: calc(50% - 3.5cm);
+            top: 0.15cm;
+            width: auto;
+            height: 4cm;
+            z-index: 3;
+            opacity: 0.9;
+        }
+        .name-line { font-weight: 700; text-decoration: underline; margin-top: -0.75cm; position: relative; z-index: 1; }
         .muted { color: #111; font-size: 9px; }
     </style>
 </head>
@@ -43,12 +67,7 @@
         $majorName = $major?->konsentrasi_keahlian ?? '-';
         $programKeahlian = $major?->program_keahlian ?? '-';
         $bidangKeahlian = $major?->bidang_keahlian ?? '-';
-        $city = 'Indramayu';
-
-        if (! empty($school?->address) && str_contains((string) $school->address, '-')) {
-            $parts = explode('-', (string) $school->address);
-            $city = trim((string) end($parts)) ?: $city;
-        }
+        $city = $school?->city ?? 'Indramayu';
 
         $orderedCategories = [
             'Umum' => '1. Kelompok Mapel Umum',
@@ -164,14 +183,8 @@
 
     <table class="footer-grid">
         <tr>
-            <td>
-                <div class="verification-box">
-                    <img src="{{ $qrCodeDataUri }}" alt="QR Verifikasi SKL" class="verification-qr">
-                    <div class="muted">Kode: {{ $verificationCode }}</div>
-                    <div class="muted">Validasi: {{ $verificationUrl }}</div>
-                </div>
-            </td>
-            <td class="sign-box">
+            <td style="width: 60%;"></td>
+            <td class="sign-box" style="width: 40%; text-align: center;">
                 <div>{{ $city }}, {{ $skl->letter_date ? \Carbon\Carbon::parse($skl->letter_date)->translatedFormat('d F Y') : now()->translatedFormat('d F Y') }}</div>
                 <div>Kepala Sekolah,</div>
 
@@ -187,6 +200,20 @@
                 <div class="name-line">{{ $headmaster?->name ?? '...........................................' }}</div>
                 <div>NIP. {{ $headmaster?->nip ?? '-' }}</div>
                 <div>{{ $headmaster?->rank ?? '-' }}</div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="footer-verification">
+        <tr>
+            <td style="width: 90px; vertical-align: top;">
+                <img src="{{ $qrCodeDataUri }}" alt="QR Verifikasi SKL" class="verification-qr">
+                <div class="muted" style="font-size: 8px; margin-top: 2px;">{{ $verificationCode }}</div>
+            </td>
+            <td style="padding-left: 12px; vertical-align: top; font-size: 9px;">
+                <div style="color: #d9534f; font-weight: bold; margin-bottom: 2px;">Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh Balai Besar Sertifikasi Elektronik (BSrE) Badan Siber dan Sandi Negara.</div>
+                <div>Dokumen digital yang asli dapat diperoleh dengan memindai QR Code, memasukkan kode pada Aplikasi NDE Pemerintah Daerah Provinsi Jawa Barat, atau mengakses tautan berikut:</div>
+                <div style="margin-top: 2px;"><a href="{{ $verificationUrl }}" style="color: #0066cc; text-decoration: underline;">{{ $verificationUrl }}</a></div>
             </td>
         </tr>
     </table>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\School;
 use App\Models\Skl;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -10,7 +11,9 @@ class PublicSklVerificationController extends Controller
 {
     public function landing(): View
     {
-        return view('public.landing');
+        return view('public.landing', [
+            'school' => School::query()->first(),
+        ]);
     }
 
     public function home(Request $request): View

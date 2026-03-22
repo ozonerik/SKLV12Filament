@@ -13,7 +13,9 @@ return new class extends Migration {
         Schema::create('schools', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('vision')->nullable();
             $table->text('address');
+            $table->string('city')->default('Indramayu');
             $table->string('postal_code', 20);
             $table->string('website')->nullable();
             $table->string('email')->nullable();
@@ -21,6 +23,7 @@ return new class extends Migration {
             $table->string('province');
             $table->string('kcd_wilayah', 50);
             $table->string('province_logo')->nullable();
+            $table->string('school_logo')->nullable();
             $table->string('school_stamp')->nullable();
             $table->timestamps();
         });

@@ -39,11 +39,22 @@ class SchoolResource extends Resource
                     ->label('Nama Sekolah')
                     ->required()
                     ->maxLength(255),
+                Textarea::make('vision')
+                    ->label('Visi Sekolah')
+                    ->required()
+                    ->default('Mewujudkan insan yang berakhlak mulia dan kompeten.')
+                    ->rows(2)
+                    ->maxLength(65535),
                 Textarea::make('address')
                     ->label('Alamat Sekolah')
                     ->required()
                     ->rows(3)
                     ->maxLength(65535),
+                TextInput::make('city')
+                    ->label('Kab/Kota')
+                    ->required()
+                    ->default('Indramayu')
+                    ->maxLength(100),
                 TextInput::make('postal_code')
                     ->label('Kodepos')
                     ->required()
@@ -76,6 +87,12 @@ class SchoolResource extends Resource
                     ->directory('schools')
                     ->disk('public')
                     ->nullable(),
+                FileUpload::make('school_logo')
+                    ->label('Logo Sekolah')
+                    ->image()
+                    ->directory('schools')
+                    ->disk('public')
+                    ->nullable(),
                 FileUpload::make('school_stamp')
                     ->label('Stamp Sekolah')
                     ->image()
@@ -95,6 +112,11 @@ class SchoolResource extends Resource
                     ->searchable(),
                 ImageColumn::make('province_logo')
                     ->label('Logo Provinsi')
+                    ->disk('public')
+                    ->square()
+                    ->size(56),
+                ImageColumn::make('school_logo')
+                    ->label('Logo Sekolah')
                     ->disk('public')
                     ->square()
                     ->size(56),

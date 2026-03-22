@@ -16,7 +16,9 @@ class SchoolSeeder extends Seeder
             ['id' => 1],
             [
                 'name' => 'SMKN 1 Krangkeng',
+                'vision' => 'Mewujudkan insan yang berakhlak mulia dan kompeten.',
                 'address' => 'Jl. Raya Singakerta Kel. Singakerta Kec. Krangkeng - Indramayu',
+                'city' => 'Indramayu',
                 'postal_code' => '45284',
                 'website' => 'https://www.smkn1krangkeng.sch.id',
                 'email' => 'admin@smkn1krangkeng.sch.id',
@@ -24,6 +26,7 @@ class SchoolSeeder extends Seeder
                 'province' => 'Jawa Barat',
                 'kcd_wilayah' => 'IX',
                 'province_logo' => null,
+                'school_logo' => null,
                 'school_stamp' => null,
             ]
         );

@@ -11,7 +11,9 @@ class School extends Model
 
     protected $fillable = [
         'name',
+        'vision',
         'address',
+        'city',
         'postal_code',
         'website',
         'email',
@@ -19,6 +21,7 @@ class School extends Model
         'province',
         'kcd_wilayah',
         'province_logo',
+        'school_logo',
         'school_stamp',
     ];
 }
