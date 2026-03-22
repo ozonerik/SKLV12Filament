@@ -112,6 +112,7 @@ class AdminDashboard extends Dashboard
             ->count();
 
         $questionDistributions = $this->getQuestionDistributions($schoolYearId);
+        $questionChartSnapshots = $this->buildQuestionChartSnapshots($questionDistributions);
 
         $pdf = Pdf::loadView('pdf.admin-dashboard-report', [
             'generatedAt' => now(),
