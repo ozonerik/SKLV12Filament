@@ -8,6 +8,11 @@ use Illuminate\View\View;
 
 class PublicSklVerificationController extends Controller
 {
+    public function landing(): View
+    {
+        return view('public.landing');
+    }
+
     public function home(Request $request): View
     {
         $code = strtoupper(trim((string) $request->query('code', '')));

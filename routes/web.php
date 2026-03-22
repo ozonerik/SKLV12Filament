@@ -4,7 +4,7 @@ use App\Http\Controllers\LulusanImportController;
 use App\Http\Controllers\PublicSklVerificationController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [PublicSklVerificationController::class, 'home'])->name('home');
+Route::get('/', [PublicSklVerificationController::class, 'landing'])->name('home');
 Route::get('/validasi-skl', [PublicSklVerificationController::class, 'home'])->name('skl.verify.search');
 Route::get('/validasi-skl/{code}', [PublicSklVerificationController::class, 'show'])->name('skl.verify.show');
 
