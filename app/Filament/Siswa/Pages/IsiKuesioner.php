@@ -51,6 +51,7 @@ class IsiKuesioner extends Page
         }
 
         $questionnaire = Questionnaire::query()
+            ->where('school_year_id', $student->school_year_id)
             ->where('is_active', true)
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())

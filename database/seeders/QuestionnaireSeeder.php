@@ -6,6 +6,7 @@ use App\Models\Answer;
 use App\Models\Question;
 use App\Models\Questionnaire;
 use App\Models\QuestionOption;
+use App\Models\SchoolYear;
 use App\Models\Student;
 use Illuminate\Database\Seeder;
 
@@ -13,10 +14,20 @@ class QuestionnaireSeeder extends Seeder
 {
     public function run(): void
     {
+        $schoolYear = SchoolYear::query()->orderByDesc('id')->first();
+
+        if (! $schoolYear) {
+            return;
+        }
+
         $questionnaire = Questionnaire::query()->firstOrCreate(
-            ['title' => 'Kuesioner Kepuasan Siswa'],
+            [
+                'title' => 'Kuesioner Kepuasan Siswa',
+                'school_year_id' => $schoolYear->id,
+            ],
             [
                 'description' => 'Kuesioner untuk mengukur kepuasan siswa.',
+                'school_year_id' => $schoolYear->id,
                 'start_date' => now()->subDays(3)->toDateString(),
                 'end_date' => now()->addDays(14)->toDateString(),
                 'is_active' => true,
@@ -55,7 +66,9 @@ class QuestionnaireSeeder extends Seeder
         }
 
         $questions = $questionnaire->questions()->with('options')->get();
-        $students = Student::query()->get();
+        $students = Student::query()
+            ->where('school_year_id', $questionnaire->school_year_id)
+            ->get();
 
         foreach ($students as $student) {
             foreach ($questions as $question) {

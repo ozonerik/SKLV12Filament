@@ -12,6 +12,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -20,6 +21,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class QuestionnaireResource extends Resource
@@ -38,6 +40,13 @@ class QuestionnaireResource extends Resource
                     ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),
+                Select::make('school_year_id')
+                    ->label('Tahun Pelajaran')
+                    ->relationship('schoolYear', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->helperText('Kuesioner ini hanya akan tampil untuk siswa pada tahun pelajaran yang dipilih.')
+                    ->required(),
                 DatePicker::make('start_date')
                         ->native(false)
                         ->locale('id')
@@ -49,6 +58,7 @@ class QuestionnaireResource extends Resource
                     ->required()
                     ->displayFormat('d/m/Y'),
                 Toggle::make('is_active')
+                    ->helperText('Hanya satu kuesioner aktif yang boleh memiliki periode bertumpang tindih pada tahun pelajaran yang sama.')
                     ->required(),
             ]);
     }
@@ -59,6 +69,10 @@ class QuestionnaireResource extends Resource
             ->recordTitleAttribute('title')
             ->columns([
                 TextColumn::make('title')
+                    ->searchable(),
+                TextColumn::make('schoolYear.name')
+                    ->label('Tahun Pelajaran')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('start_date')
                     ->date('d/m/Y')
@@ -78,7 +92,11 @@ class QuestionnaireResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('school_year_id')
+                    ->label('Tahun Pelajaran')
+                    ->relationship('schoolYear', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->recordActions([
                 EditAction::make(),
