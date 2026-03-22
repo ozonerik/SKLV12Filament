@@ -129,6 +129,11 @@ class KelulusanDanSkl extends Page
             'qrCodeDataUri' => $qrCodeDataUri,
         ])->setPaper('a4');
 
+        $skl->forceFill([
+            'downloaded_at' => now(),
+            'download_count' => ((int) $skl->download_count) + 1,
+        ])->save();
+
         return response()->streamDownload(
             fn() => print($pdf->output()),
             "SKL-{$student?->nisn}.pdf",

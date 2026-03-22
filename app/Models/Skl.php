@@ -12,11 +12,13 @@ class Skl extends Model
 
     protected $fillable = [
         'student_id', 'letter_number', 'verification_code', 'status',
-        'letter_date', 'published_at', 'is_questionnaire_completed'
+        'letter_date', 'published_at', 'downloaded_at', 'download_count', 'is_questionnaire_completed'
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
+        'downloaded_at' => 'datetime',
+        'download_count' => 'integer',
         'letter_date' => 'date',
         'is_questionnaire_completed' => 'boolean',
     ];
@@ -63,5 +65,10 @@ class Skl extends Model
     public function isPublished(): bool
     {
         return now()->greaterThanOrEqualTo($this->published_at);
+    }
+
+    public function hasBeenDownloaded(): bool
+    {
+        return filled($this->downloaded_at) || ((int) $this->download_count > 0);
     }
 }
