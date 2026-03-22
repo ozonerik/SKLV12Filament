@@ -20,9 +20,10 @@
         .chart-visual { margin: 10px 0; }
         .chart-row { display: flex; margin-bottom: 8px; align-items: center; page-break-inside: avoid; }
         .chart-label { width: 100px; font-weight: 600; color: #374151; font-size: 10px; }
-        .chart-bar { flex: 1; background: #e5e7eb; height: 24px; margin: 0 8px; border-radius: 3px; position: relative; overflow: hidden; }
-        .chart-bar-fill { height: 100%; display: flex; align-items: center; justify-content: center; color: #000; font-size: 9px; font-weight: 600; }
-        .chart-value { width: 60px; text-align: right; color: #111; font-weight: 600; font-size: 10px; }
+        .chart-bar { flex: 1; background: #e5e7eb; height: 24px; margin: 0 8px; border-radius: 3px; position: relative; overflow: visible; }
+        .chart-bar-fill { height: 100%; }
+        .chart-bar-text { position: absolute; top: 50%; color: #000; font-size: 9px; font-weight: 600; white-space: nowrap; }
+        .chart-bar-text-inside { left: 50%; transform: translate(-50%, -50%); }
         
         .bar-green { background: #10B981; }
         .bar-red { background: #EF4444; }
@@ -84,10 +85,9 @@
                     <div class="chart-label">{{ $label }}</div>
                     <div class="chart-bar">
                         <div class="chart-bar-fill" style="width: {{ $percentage }}%; background: {{ $color }};">
-                            {{ $percentage }}%
                         </div>
+                        <span class="chart-bar-text chart-bar-text-inside">{{ $percentage }}% ({{ $value }} siswa)</span>
                     </div>
-                    <div class="chart-value">{{ $value }} siswa</div>
                 </div>
             @endforeach
         </div>
@@ -134,10 +134,9 @@
                     <div class="chart-label">{{ $label }}</div>
                     <div class="chart-bar">
                         <div class="chart-bar-fill" style="width: {{ $percentage }}%; background: {{ $color }};">
-                            {{ $percentage }}%
                         </div>
+                        <span class="chart-bar-text chart-bar-text-inside">{{ $percentage }}% ({{ $value }} siswa)</span>
                     </div>
-                    <div class="chart-value">{{ $value }} siswa</div>
                 </div>
             @endforeach
         </div>
@@ -166,7 +165,7 @@
     </div>
 
     <h2>3. Hasil Kuesioner (Distribusi Per Pertanyaan)</h2>
-    <div class="small">Setiap pertanyaan menampilkan jumlah jawaban untuk tiap opsi.</div>
+    <div class="small">Setiap pertanyaan menampilkan jumlah siswa untuk tiap opsi.</div>
 
     @forelse ($questionDistributions as $question)
         <div class="card question-section">
@@ -190,10 +189,9 @@
                         <div class="chart-label">{{ $option['option_label'] }}</div>
                         <div class="chart-bar">
                             <div class="chart-bar-fill" style="width: {{ $percentage }}%; background: {{ $color }};">
-                                {{ $percentage }}%
                             </div>
+                            <span class="chart-bar-text chart-bar-text-inside">{{ $percentage }}% ({{ $option['total'] }} siswa)</span>
                         </div>
-                        <div class="chart-value">{{ $option['total'] }}</div>
                     </div>
                 @endforeach
             </div>
@@ -203,7 +201,7 @@
                     <tr>
                         <th>Opsi</th>
                         <th>Teks Opsi</th>
-                        <th>Jumlah Jawaban</th>
+                        <th>Jumlah Siswa</th>
                         <th>Persentase</th>
                     </tr>
                 </thead>
