@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('skls', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained()->cascadeOnDelete();            
+            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
             $table->string('letter_number'); // Nomor Surat
+            $table->string('verification_code', 20)
+                ->nullable()
+                ->unique();
             $table->enum('status', ['Lulus', 'Tidak Lulus']);
             $table->date('letter_date'); // Tanggal SKL
             $table->dateTime('published_at'); // Waktu Open
+            $table->dateTime('downloaded_at')->nullable(); // Waktu Download
             $table->boolean('is_questionnaire_completed')->default(false);
             $table->timestamps();
         });

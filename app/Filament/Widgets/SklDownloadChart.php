@@ -40,11 +40,15 @@ class SklDownloadChart extends ChartWidget
             ->whereHas('student', fn (Builder $query) => $query->where('school_year_id', $schoolYearId));
 
         $downloaded = (clone $baseQuery)
-            ->whereNotNull('downloaded_at')
+            ->where(function (Builder $query): void {
+                $query->whereNotNull('downloaded_at')
+                    ->orWhereNotNull('verification_code');
+            })
             ->count();
 
         $notDownloaded = (clone $baseQuery)
             ->whereNull('downloaded_at')
+            ->whereNull('verification_code')
             ->count();
 
         return [

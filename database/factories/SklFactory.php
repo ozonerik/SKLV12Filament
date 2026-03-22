@@ -28,9 +28,9 @@ class SklFactory extends Factory
             'status' => fake()->randomElement(['Lulus', 'Tidak Lulus']),
             'letter_date' => $letterDate,
             'published_at' => $publishedAt,
+            'verification_code' => $hasDownloaded ? strtoupper(fake()->bothify('??##??##??##')) : null,
             'downloaded_at' => $downloadedAt,
-            'download_count' => $hasDownloaded ? fake()->numberBetween(1, 3) : 0,
-            'is_questionnaire_completed' => fake()->boolean(70),
+            'is_questionnaire_completed' => fake()->boolean(70) ? true : null,
         ];
     }
 }

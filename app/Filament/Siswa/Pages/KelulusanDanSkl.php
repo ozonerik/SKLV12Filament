@@ -131,7 +131,6 @@ class KelulusanDanSkl extends Page
 
         $skl->forceFill([
             'downloaded_at' => now(),
-            'download_count' => ((int) $skl->download_count) + 1,
         ])->save();
 
         return response()->streamDownload(

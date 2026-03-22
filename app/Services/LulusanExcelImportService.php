@@ -174,6 +174,9 @@ class LulusanExcelImportService
 							'status' => 'Lulus',
 							'letter_date' => $letterDate->toDateString(),
 							'published_at' => $publishedAt,
+							'verification_code' => null,
+							'downloaded_at' => null,
+							'is_questionnaire_completed' => false,
 						])->save();
 					}
 					$result['skls_updated']++;
@@ -185,6 +188,8 @@ class LulusanExcelImportService
 							'status' => 'Lulus',
 							'letter_date' => $letterDate->toDateString(),
 							'published_at' => $publishedAt,
+							'verification_code' => null,
+							'downloaded_at' => null,
 							'is_questionnaire_completed' => false,
 						]);
 					}
@@ -206,12 +211,7 @@ class LulusanExcelImportService
 						throw new RuntimeException("Nilai mapel '{$subject->kode}' pada baris {$excelRowNumber} harus di rentang 0-100.");
 					}
 
-					if (! $isExistingStudent) {
-						$result['grades_created']++;
-						continue;
-					}
-
-					$isNewGrade = ! in_array($subject->id, $existingGradeSubjectIds, true);
+					$isNewGrade = ! $isExistingStudent || ! in_array($subject->id, $existingGradeSubjectIds, true);
 
 					if ($persist) {
 						$grade = Grade::query()->firstOrNew([

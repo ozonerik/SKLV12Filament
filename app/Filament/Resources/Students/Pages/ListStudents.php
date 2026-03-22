@@ -66,7 +66,7 @@ class ListStudents extends ListRecords
                         ])
                         ->required(),
                 ])
-                ->action(function (array $data): void {
+                ->action(function (array $data) {
                     $storedPath = $data['excel_file'] ?? null;
 
                     if (! $storedPath) {
@@ -87,42 +87,16 @@ class ListStudents extends ListRecords
                         Cache::put("lulusan_import_preview:{$token}", [
                             'stored_path' => $storedPath,
                             'return_url' => request()->header('referer') ?: request()->fullUrl(),
+                            'preview_result' => $result,
                         ], now()->addMinutes(30));
 
-                        $confirmUrl = URL::temporarySignedRoute(
-                            'lulusan-import.confirm',
-                            now()->addMinutes(30),
-                            ['token' => $token]
-                        );
-                        $cancelUrl = URL::temporarySignedRoute(
-                            'lulusan-import.cancel',
+                        $previewUrl = URL::temporarySignedRoute(
+                            'lulusan-import.preview',
                             now()->addMinutes(30),
                             ['token' => $token]
                         );
 
-                        Notification::make()
-                            ->title('Preview berhasil - pilih Simpan atau Batalkan')
-                            ->body(
-                                "Baris valid: {$result['rows_processed']} | " .
-                                "Student akan dibuat: {$result['students_created']} | Student akan diperbarui: {$result['students_updated']} | " .
-                                "SKL akan dibuat: {$result['skls_created']} | SKL akan diperbarui: {$result['skls_updated']} | " .
-                                "Grade akan dibuat: {$result['grades_created']} | Grade akan diperbarui: {$result['grades_updated']}"
-                            )
-                            ->warning()
-                            ->persistent()
-                            ->actions([
-                                Action::make('save')
-                                    ->label('Simpan')
-                                    ->button()
-                                    ->color('success')
-                                    ->url($confirmUrl, shouldOpenInNewTab: false),
-                                Action::make('cancel')
-                                    ->label('Batalkan')
-                                    ->button()
-                                    ->color('gray')
-                                    ->url($cancelUrl, shouldOpenInNewTab: false),
-                            ])
-                            ->send();
+                        return redirect($previewUrl);
                     } catch (Throwable $exception) {
                         report($exception);
 

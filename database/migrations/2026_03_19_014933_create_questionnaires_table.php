@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
+            $table->foreignId('school_year_id')
+                ->nullable()
+                ->constrained('school_years')
+                ->nullOnDelete();
             $table->date('start_date');
             $table->date('end_date');
             $table->boolean('is_active')->default(true);

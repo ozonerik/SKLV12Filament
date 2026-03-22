@@ -12,27 +12,15 @@ class Skl extends Model
 
     protected $fillable = [
         'student_id', 'letter_number', 'verification_code', 'status',
-        'letter_date', 'published_at', 'downloaded_at', 'download_count', 'is_questionnaire_completed'
+        'letter_date', 'published_at', 'downloaded_at', 'is_questionnaire_completed'
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
         'downloaded_at' => 'datetime',
-        'download_count' => 'integer',
         'letter_date' => 'date',
         'is_questionnaire_completed' => 'boolean',
     ];
-
-    protected static function booted(): void
-    {
-        static::saving(function (self $skl): void {
-            if (filled($skl->verification_code)) {
-                return;
-            }
-
-            $skl->verification_code = self::generateVerificationCode($skl->id);
-        });
-    }
 
     public function student() { return $this->belongsTo(Student::class); }
 
@@ -69,6 +57,6 @@ class Skl extends Model
 
     public function hasBeenDownloaded(): bool
     {
-        return filled($this->downloaded_at) || ((int) $this->download_count > 0);
+        return filled($this->downloaded_at) || filled($this->verification_code);
     }
 }

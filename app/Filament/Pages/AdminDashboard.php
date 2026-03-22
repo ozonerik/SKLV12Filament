@@ -100,8 +100,16 @@ class AdminDashboard extends Dashboard
 
         $lulus = (clone $baseSklQuery)->where('status', 'Lulus')->count();
         $tidakLulus = (clone $baseSklQuery)->whereIn('status', ['Tidak Lulus', 'Tidak lulus'])->count();
-        $downloaded = (clone $baseSklQuery)->whereNotNull('downloaded_at')->count();
-        $notDownloaded = (clone $baseSklQuery)->whereNull('downloaded_at')->count();
+        $downloaded = (clone $baseSklQuery)
+            ->where(function (Builder $query): void {
+                $query->whereNotNull('downloaded_at')
+                    ->orWhereNotNull('verification_code');
+            })
+            ->count();
+        $notDownloaded = (clone $baseSklQuery)
+            ->whereNull('downloaded_at')
+            ->whereNull('verification_code')
+            ->count();
 
         $questionDistributions = $this->getQuestionDistributions($schoolYearId);
 

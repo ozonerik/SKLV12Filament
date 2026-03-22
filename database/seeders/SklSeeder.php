@@ -26,9 +26,9 @@ class SklSeeder extends Seeder
                     'status' => fake()->randomElement(['Lulus', 'Tidak Lulus']),
                     'letter_date' => now()->toDateString(),
                     'published_at' => now()->subMinutes(10),
+                    'verification_code' => $hasDownloaded ? Skl::generateVerificationCode() : null,
                     'downloaded_at' => $hasDownloaded ? now()->subMinutes(fake()->numberBetween(1, 120)) : null,
-                    'download_count' => $hasDownloaded ? fake()->numberBetween(1, 2) : 0,
-                    'is_questionnaire_completed' => $hasAnsweredQuestionnaire,
+                    'is_questionnaire_completed' => $hasAnsweredQuestionnaire ? true : null,
                 ],
             );
         });

@@ -8,6 +8,7 @@ use App\Filament\Resources\Skls\Pages\ListSkls;
 use App\Models\Major;
 use App\Models\SchoolYear;
 use App\Models\Skl;
+use App\Models\Student;
 use BackedEnum;
 use Filament\Forms\Components\TextInput;
 use Filament\Actions\BulkActionGroup;
@@ -120,6 +121,11 @@ class SklResource extends Resource
                     ->sortable(),
                 TextColumn::make('letter_number')
                     ->searchable(),
+                TextColumn::make('verification_code')
+                    ->label('Kode Verifikasi')
+                    ->searchable()
+                    ->copyable()
+                    ->toggleable(),
                 TextColumn::make('status')
                     ->badge()
                     ->sortable()
@@ -134,6 +140,19 @@ class SklResource extends Resource
                 TextColumn::make('published_at')
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
+                TextColumn::make('student.average_grade')
+                    ->label('Rata-rata Nilai')
+                    ->numeric(decimalPlaces: 2)
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Student::query()
+                                ->selectRaw('COALESCE(AVG(grades.score), 0)')
+                                ->leftJoin('grades', 'grades.student_id', '=', 'students.id')
+                                ->whereColumn('students.id', 'skls.student_id')
+                                ->groupBy('students.id'),
+                            $direction,
+                        );
+                    }),
                 IconColumn::make('is_questionnaire_completed')
                     ->boolean(),
                 TextColumn::make('created_at')

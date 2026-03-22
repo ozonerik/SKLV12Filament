@@ -4,12 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Services\LulusanExcelImportService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Throwable;
 
 class LulusanImportController extends Controller
 {
+    public function preview(string $token): View|RedirectResponse
+    {
+        $key = "lulusan_import_preview:{$token}";
+        $payload = Cache::get($key);
+
+        if (! is_array($payload) || empty($payload['stored_path'])) {
+            return redirect('/')
+                ->with('lulusan_import_feedback', [
+                    'type' => 'danger',
+                    'message' => 'Sesi preview import tidak ditemukan atau sudah kedaluwarsa.',
+                ]);
+        }
+
+        $confirmUrl = URL::temporarySignedRoute(
+            'lulusan-import.confirm',
+            now()->addMinutes(30),
+            ['token' => $token]
+        );
+        $cancelUrl = URL::temporarySignedRoute(
+            'lulusan-import.cancel',
+            now()->addMinutes(30),
+            ['token' => $token]
+        );
+
+        return view('imports.lulusan-preview', [
+            'preview' => (array) ($payload['preview_result'] ?? []),
+            'confirmUrl' => $confirmUrl,
+            'cancelUrl' => $cancelUrl,
+        ]);
+    }
+
     public function confirm(string $token, LulusanExcelImportService $service): RedirectResponse
     {
         $key = "lulusan_import_preview:{$token}";

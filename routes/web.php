@@ -9,6 +9,9 @@ Route::get('/validasi-skl', [PublicSklVerificationController::class, 'home'])->n
 Route::get('/validasi-skl/{code}', [PublicSklVerificationController::class, 'show'])->name('skl.verify.show');
 
 Route::middleware('signed')->group(function () {
+    Route::get('/imports/lulusan/{token}/preview', [LulusanImportController::class, 'preview'])
+        ->name('lulusan-import.preview');
+
     Route::get('/imports/lulusan/{token}/confirm', [LulusanImportController::class, 'confirm'])
         ->name('lulusan-import.confirm');
     Route::get('/imports/lulusan/{token}/cancel', [LulusanImportController::class, 'cancel'])
