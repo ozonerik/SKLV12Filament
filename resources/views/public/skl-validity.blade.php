@@ -173,6 +173,16 @@
                                 <i class="fas fa-link flex-shrink-0"></i>
                                 {{ route('skl.verify.show', ['code' => $skl->verification_code]) }}
                             </a>
+
+                            @if ($skl->isPublished())
+                                <div class="mt-4">
+                                    <a href="{{ route('skl.verify.download', ['code' => $skl->verification_code]) }}"
+                                       class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                                        <i class="fas fa-download"></i>
+                                        Download SKL (PDF)
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
