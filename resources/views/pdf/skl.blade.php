@@ -117,6 +117,7 @@
     <table class="identity">
         <tr><td class="label">Nama</td><td class="colon">:</td><td><strong>{{ strtoupper((string) ($student?->name ?? '-')) }}</strong></td></tr>
         <tr><td class="label">Tempat, Tanggal Lahir</td><td class="colon">:</td><td>{{ $student?->pob ?? '-' }}, {{ $student?->dob ? \Carbon\Carbon::parse($student->dob)->translatedFormat('d F Y') : '-' }}</td></tr>
+        <tr><td class="label">Jenis Kelamin</td><td class="colon">:</td><td>{{ ($student?->jenis_kelamin ?? null) === 'L' ? 'Laki-laki' : (($student?->jenis_kelamin ?? null) === 'P' ? 'Perempuan' : '-') }}</td></tr>
         <tr><td class="label">Nomor Induk Peserta Didik</td><td class="colon">:</td><td>{{ $student?->nis ?? '-' }}</td></tr>
         <tr><td class="label">Nomor Induk Siswa Nasional</td><td class="colon">:</td><td>{{ $student?->nisn ?? '-' }}</td></tr>
         <tr><td class="label">Bidang Keahlian</td><td class="colon">:</td><td>{{ $bidangKeahlian }}</td></tr>

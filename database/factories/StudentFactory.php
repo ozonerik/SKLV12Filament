@@ -28,6 +28,7 @@ class StudentFactory extends Factory
             'nis' => (string) fake()->unique()->numberBetween(1000000000, 9999999999),
             'nisn' => (string) fake()->unique()->numberBetween(1000000000, 9999999999),
             'father_name' => fake()->name('male'),
+            'jenis_kelamin' => fake()->randomElement(['L', 'P']),
             // Login siswa: username=NISN, password=tanggal lahir ddmmyyyy (akan di-hash oleh cast).
             'password' => $passwordPlain,
         ];

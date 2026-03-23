@@ -11,7 +11,7 @@ class Student extends Authenticatable implements FilamentUser
 {
     use HasFactory;
 
-    protected $fillable = ['major_id', 'school_year_id', 'name', 'pob', 'dob', 'nis', 'nisn', 'father_name', 'password'];
+    protected $fillable = ['major_id', 'school_year_id', 'name', 'pob', 'dob', 'nis', 'nisn', 'father_name', 'jenis_kelamin', 'password'];
 
     protected $hidden = [
         'password', 'remember_token',

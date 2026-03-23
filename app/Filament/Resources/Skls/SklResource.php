@@ -46,8 +46,8 @@ class SklResource extends Resource
                     ->preload()
                     ->live()
                     ->dehydrated(false)
-                    ->default(fn (?Skl $record): ?int => $record?->student?->school_year_id)
-                    ->afterStateUpdated(fn ($state, callable $set) => $set('student_id', null)),
+                    ->default(fn(?Skl $record): ?int => $record?->student?->school_year_id)
+                    ->afterStateUpdated(fn($state, callable $set) => $set('student_id', null)),
                 Select::make('major_id')
                     ->label('Jurusan')
                     ->options(Major::query()->orderBy('konsentrasi_keahlian')->pluck('konsentrasi_keahlian', 'id')->all())
@@ -55,19 +55,19 @@ class SklResource extends Resource
                     ->preload()
                     ->live()
                     ->dehydrated(false)
-                    ->default(fn (?Skl $record): ?int => $record?->student?->major_id)
-                    ->afterStateUpdated(fn ($state, callable $set) => $set('student_id', null)),
+                    ->default(fn(?Skl $record): ?int => $record?->student?->major_id)
+                    ->afterStateUpdated(fn($state, callable $set) => $set('student_id', null)),
                 Select::make('student_id')
                     ->label('Nama Siswa')
                     ->relationship(
                         'student',
                         'name',
-                        fn (Builder $query, callable $get) => $query
-                            ->when($get('school_year_id'), fn (Builder $studentQuery, $schoolYearId) => $studentQuery->where('school_year_id', $schoolYearId))
-                            ->when($get('major_id'), fn (Builder $studentQuery, $majorId) => $studentQuery->where('major_id', $majorId))
+                        fn(Builder $query, callable $get) => $query
+                            ->when($get('school_year_id'), fn(Builder $studentQuery, $schoolYearId) => $studentQuery->where('school_year_id', $schoolYearId))
+                            ->when($get('major_id'), fn(Builder $studentQuery, $majorId) => $studentQuery->where('major_id', $majorId))
                             ->orderBy('nis')
                     )
-                    ->getOptionLabelFromRecordUsing(fn ($record): string => trim(($record->nis ?: '-') . ' - ' . $record->name))
+                    ->getOptionLabelFromRecordUsing(fn($record): string => trim(($record->nis ?: '-') . ' - ' . $record->name))
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -75,15 +75,15 @@ class SklResource extends Resource
                     ->options(['Lulus' => 'Lulus', 'Tidak Lulus' => 'Tidak lulus'])
                     ->required(),
                 DatePicker::make('letter_date')
-                        ->native(false)
-                        ->locale('id')
+                    ->native(false)
+                    ->locale('id')
                     ->required()
                     ->displayFormat('d/m/Y'),
                 TextInput::make('letter_number')
                     ->required(),
                 DateTimePicker::make('published_at')
-                        ->native(false)
-                        ->locale('id')
+                    ->native(false)
+                    ->locale('id')
                     ->required()
                     ->displayFormat('d/m/Y H:i')
                     ->seconds(false),
@@ -98,27 +98,29 @@ class SklResource extends Resource
             ->defaultSort('published_at', 'desc')
             ->recordTitleAttribute('letter_number')
             ->columns([
-                TextColumn::make('student.nis')
-                    ->label('NIS')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('student.nisn')
-                    ->label('NISN')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('student.name')
-                    ->label('Siswa')
-                    ->searchable()
+                // Menampilkan Tahun Pelajaran dari relasi Student -> SchoolYear
+                TextColumn::make('student.schoolYear.name')
+                    ->label('Tahun Pelajaran')
                     ->sortable(),
                 // Menampilkan Jurusan dari relasi Student -> Major
                 TextColumn::make('student.major.konsentrasi_keahlian')
                     ->label('Jurusan')
                     ->sortable()
                     ->searchable(),
-                // Menampilkan Tahun Pelajaran dari relasi Student -> SchoolYear
-                TextColumn::make('student.schoolYear.name')
-                    ->label('Tahun Pelajaran')
+                TextColumn::make('student.nisn')
+                    ->label('NISN')
+                    ->searchable()
                     ->sortable(),
+                TextColumn::make('student.nis')
+                    ->label('NIS')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('student.name')
+                    ->label('Siswa')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('student.jenis_kelamin')
+                    ->label('Jenis Kelamin'),
                 TextColumn::make('letter_number')
                     ->searchable(),
                 TextColumn::make('verification_code')
@@ -129,7 +131,7 @@ class SklResource extends Resource
                 TextColumn::make('status')
                     ->badge()
                     ->sortable()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Lulus' => 'success',
                         'Tidak Lulus', 'Tidak lulus' => 'danger',
                         default => 'gray',

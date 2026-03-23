@@ -64,9 +64,10 @@ class LulusanImportController extends Controller
 
             $message =
                 "Import berhasil. Baris diproses: {$result['rows_processed']} | " .
+                "Mapel terdeteksi: {$result['subjects_detected']} | " .
                 "Student dibuat: {$result['students_created']} | Student diperbarui: {$result['students_updated']} | " .
                 "SKL dibuat: {$result['skls_created']} | SKL diperbarui: {$result['skls_updated']} | " .
-                "Grade dibuat: {$result['grades_created']} | Grade diperbarui: {$result['grades_updated']}";
+                "Grade dibuat: {$result['grades_created']} | Grade diperbarui: {$result['grades_updated']} | Grade dihapus: {$result['grades_deleted']}";
 
             $type = 'success';
         } catch (Throwable $exception) {

@@ -22,6 +22,10 @@
                     <p class="text-sm text-slate-500">Baris Diproses</p>
                     <p class="mt-2 text-2xl font-semibold text-slate-900">{{ number_format((int) ($preview['rows_processed'] ?? 0)) }}</p>
                 </div>
+                <div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                    <p class="text-sm text-amber-700">Mapel Terdeteksi</p>
+                    <p class="mt-2 text-2xl font-semibold text-amber-800">{{ number_format((int) ($preview['subjects_detected'] ?? 0)) }}</p>
+                </div>
                 <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
                     <p class="text-sm text-emerald-700">Student Dibuat</p>
                     <p class="mt-2 text-2xl font-semibold text-emerald-800">{{ number_format((int) ($preview['students_created'] ?? 0)) }}</p>
@@ -42,10 +46,22 @@
                     <p class="text-sm text-violet-700">Grade Dibuat</p>
                     <p class="mt-2 text-2xl font-semibold text-violet-800">{{ number_format((int) ($preview['grades_created'] ?? 0)) }}</p>
                 </div>
-                <div class="rounded-xl border border-fuchsia-200 bg-fuchsia-50 p-4 sm:col-span-2 lg:col-span-3">
+                <div class="rounded-xl border border-fuchsia-200 bg-fuchsia-50 p-4">
                     <p class="text-sm text-fuchsia-700">Grade Diperbarui</p>
                     <p class="mt-2 text-2xl font-semibold text-fuchsia-800">{{ number_format((int) ($preview['grades_updated'] ?? 0)) }}</p>
                 </div>
+                <div class="rounded-xl border border-rose-200 bg-rose-50 p-4 sm:col-span-2 lg:col-span-1">
+                    <p class="text-sm text-rose-700">Grade Dihapus</p>
+                    <p class="mt-2 text-2xl font-semibold text-rose-800">{{ number_format((int) ($preview['grades_deleted'] ?? 0)) }}</p>
+                </div>
+            </div>
+
+            <div class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p class="text-sm font-semibold text-slate-700">Kode Mapel Terdeteksi Dari Header</p>
+                <p class="mt-2 text-sm leading-6 text-slate-600">
+                    @php($subjectCodes = $preview['subject_codes_detected'] ?? [])
+                    {{ $subjectCodes !== [] ? implode(', ', $subjectCodes) : '-' }}
+                </p>
             </div>
 
             <div class="mt-8 flex flex-wrap gap-3">

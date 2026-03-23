@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
+            $table->string('nisn')->unique();
+            $table->string('nis')->unique();
             $table->string('name');
+            $table->string('jenis_kelamin')->nullable();
             $table->string('pob'); // Tempat Lahir
             $table->date('dob');   // Tanggal Lahir
-            $table->string('nis')->unique();
-            $table->string('nisn')->unique();
             $table->string('father_name');
             $table->string('password');
             $table->foreignId('major_id')->constrained();

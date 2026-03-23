@@ -6,6 +6,8 @@ use App\Filament\Resources\Grades\Pages\CreateGrade;
 use App\Filament\Resources\Grades\Pages\EditGrade;
 use App\Filament\Resources\Grades\Pages\ListGrades;
 use App\Models\Grade;
+use App\Models\Major;
+use App\Models\SchoolYear;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -17,6 +19,8 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\SelectFilter;
 
 class GradeResource extends Resource
 {
@@ -30,8 +34,35 @@ class GradeResource extends Resource
     {
         return $schema
             ->components([
+                Select::make('school_year_id')
+                    ->label('Tahun Pelajaran')
+                    ->options(SchoolYear::query()->orderBy('name')->pluck('name', 'id')->all())
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->dehydrated(false)
+                    ->default(fn(?Grade $record): ?int => $record?->student?->school_year_id)
+                    ->afterStateUpdated(fn($state, callable $set) => $set('student_id', null)),
+                Select::make('major_id')
+                    ->label('Jurusan')
+                    ->options(Major::query()->orderBy('konsentrasi_keahlian')->pluck('konsentrasi_keahlian', 'id')->all())
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->dehydrated(false)
+                    ->default(fn(?Grade $record): ?int => $record?->student?->major_id)
+                    ->afterStateUpdated(fn($state, callable $set) => $set('student_id', null)),
                 Select::make('student_id')
-                    ->relationship('student', 'name')
+                    ->label('Nama Siswa')
+                    ->relationship(
+                        'student',
+                        'name',
+                        fn(Builder $query, callable $get) => $query
+                            ->when($get('school_year_id'), fn(Builder $studentQuery, $schoolYearId) => $studentQuery->where('school_year_id', $schoolYearId))
+                            ->when($get('major_id'), fn(Builder $studentQuery, $majorId) => $studentQuery->where('major_id', $majorId))
+                            ->orderBy('nis')
+                    )
+                    ->getOptionLabelFromRecordUsing(fn($record): string => trim(($record->nis ?: '-') . ' - ' . $record->name))
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -53,20 +84,20 @@ class GradeResource extends Resource
         return $table
             ->recordTitleAttribute('id')
             ->columns([
+                TextColumn::make('student.schoolYear.name')
+                    ->label('Tahun Ajaran')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('student.major.kode_jurusan')
+                    ->label('Jurusan')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('student.nisn')
                     ->label('NISN')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('student.nis')
                     ->label('NIS')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('student.name')
-                    ->label('Siswa')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('student.schoolyear.name')
-                    ->label('Tahun Ajaran')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('student.name')
@@ -89,8 +120,31 @@ class GradeResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
+->filters([
+                SelectFilter::make('major_id')
+                    ->label('Jurusan')
+                    ->options(Major::query()->orderBy('konsentrasi_keahlian')->pluck('konsentrasi_keahlian', 'id')->all())
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (blank($data['value'] ?? null)) {
+                            return $query;
+                        }
+
+                        return $query->whereHas('student', function (Builder $studentQuery) use ($data): void {
+                            $studentQuery->where('major_id', $data['value']);
+                        });
+                    }),
+                SelectFilter::make('school_year_id')
+                    ->label('Tahun Pelajaran')
+                    ->options(SchoolYear::query()->orderBy('name')->pluck('name', 'id')->all())
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (blank($data['value'] ?? null)) {
+                            return $query;
+                        }
+
+                        return $query->whereHas('student', function (Builder $studentQuery) use ($data): void {
+                            $studentQuery->where('school_year_id', $data['value']);
+                        });
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),

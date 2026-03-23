@@ -18,7 +18,7 @@ use RuntimeException;
 class LulusanExcelImportService
 {
 	/**
-	 * @return array<string, int>
+	 * @return array<string, mixed>
 	 */
 	public function preview(string $filePath): array
 	{
@@ -26,7 +26,7 @@ class LulusanExcelImportService
 	}
 
 	/**
-	 * @return array<string, int>
+	 * @return array<string, mixed>
 	 */
 	public function import(string $filePath): array
 	{
@@ -34,7 +34,7 @@ class LulusanExcelImportService
 	}
 
 	/**
-	 * @return array<string, int>
+	 * @return array<string, mixed>
 	 */
 	protected function process(string $filePath, bool $persist): array
 	{
@@ -56,8 +56,14 @@ class LulusanExcelImportService
 		$result = [
 			'students_created' => 0,
 			'students_updated' => 0,
+			'subjects_detected' => count($subjectColumnMap),
+			'subject_codes_detected' => array_values(array_map(
+				fn (Subject $subject): string => (string) $subject->kode,
+				$subjectColumnMap,
+			)),
 			'grades_created' => 0,
 			'grades_updated' => 0,
+			'grades_deleted' => 0,
 			'skls_created' => 0,
 			'skls_updated' => 0,
 			'rows_processed' => 0,
@@ -75,6 +81,7 @@ class LulusanExcelImportService
 				$nisn = trim((string) $this->cell($row, $columnMap['NISN']));
 				$nis = trim((string) $this->cell($row, $columnMap['NIS']));
 				$studentName = trim((string) $this->cell($row, $columnMap['NAMA_SISWA']));
+				$jenisKelamin = strtoupper(trim((string) $this->cell($row, $columnMap['JK'])));
 				$pob = trim((string) $this->cell($row, $columnMap['TEMPAT_LAHIR']));
 				$dobRaw = $this->cell($row, $columnMap['TGL_LAHIR']);
 				$fatherName = trim((string) $this->cell($row, $columnMap['NAMA_AYAH']));
@@ -97,7 +104,11 @@ class LulusanExcelImportService
 					$majorCode === '' ||
 					$letterNumber === ''
 				) {
-					throw new RuntimeException("Data tidak boleh kosong pada baris {$excelRowNumber}. Kolom yang harus diisi: TAHUN_PELAJARAN, NISN, NIS, NAMA SISWA, TEMPAT_LAHIR, TGL_LAHIR, NAMA_AYAH, KODE_JURUSAN, NO_SURAT.");
+					throw new RuntimeException("Data tidak boleh kosong pada baris {$excelRowNumber}. Kolom yang harus diisi: TAHUN_PELAJARAN, NISN, NIS, NAMA SISWA, JK, TEMPAT_LAHIR, TGL_LAHIR, NAMA_AYAH, KODE_JURUSAN, NO_SURAT.");
+				}
+
+				if ($jenisKelamin !== '' && $jenisKelamin !== 'L' && $jenisKelamin !== 'P') {
+					throw new RuntimeException("Nilai JK pada baris {$excelRowNumber} harus 'L' atau 'P'.");
 				}
 
 				$schoolYear = $schoolYearMap->get(strtoupper($schoolYearName));
@@ -136,6 +147,7 @@ class LulusanExcelImportService
 						'nis' => $nis,
 						'nisn' => $nisn,
 						'father_name' => $fatherName,
+						'jenis_kelamin' => $jenisKelamin ?: null,
 						'major_id' => $major->id,
 						'school_year_id' => $schoolYear->id,
 					]);
@@ -155,6 +167,7 @@ class LulusanExcelImportService
 							'nis' => $nis,
 							'nisn' => $nisn,
 							'father_name' => $fatherName,
+							'jenis_kelamin' => $jenisKelamin ?: null,
 							'major_id' => $major->id,
 							'school_year_id' => $schoolYear->id,
 						]);
@@ -198,7 +211,19 @@ class LulusanExcelImportService
 
 				foreach ($subjectColumnMap as $columnIndex => $subject) {
 					$scoreRaw = $this->cell($row, $columnIndex);
+					// Jika nilai kosong atau 0, artinya siswa tidak mengontrak mapel tersebut
 					if ($scoreRaw === null || trim((string) $scoreRaw) === '') {
+						// Hapus grade jika siswa existing dan sudah punya grade untuk mapel ini
+						if ($isExistingStudent && $persist) {
+							$deleted = Grade::query()
+								->where('student_id', $student->id)
+								->where('subject_id', $subject->id)
+								->delete();
+						
+							if ($deleted > 0) {
+								$result['grades_deleted']++;
+							}
+						}
 						continue;
 					}
 
@@ -207,6 +232,21 @@ class LulusanExcelImportService
 					}
 
 					$score = (int) round((float) $scoreRaw);
+					// Jika nilai 0, artinya siswa tidak mengontrak mapel tersebut, delete jika ada
+					if ($score === 0) {
+						if ($isExistingStudent && $persist) {
+							$deleted = Grade::query()
+								->where('student_id', $student->id)
+								->where('subject_id', $subject->id)
+								->delete();
+						
+							if ($deleted > 0) {
+								$result['grades_deleted']++;
+							}
+						}
+						continue;
+					}
+
 					if ($score < 0 || $score > 100) {
 						throw new RuntimeException("Nilai mapel '{$subject->kode}' pada baris {$excelRowNumber} harus di rentang 0-100.");
 					}
@@ -277,6 +317,7 @@ class LulusanExcelImportService
 			'NISN',
 			'NIS',
 			'NAMA_SISWA',
+			'JK',
 			'TEMPAT_LAHIR',
 			'TGL_LAHIR',
 			'NAMA_AYAH',
@@ -284,7 +325,6 @@ class LulusanExcelImportService
 			'NO_SURAT',
 			'TGL_SURAT',
 			'TGL_KELULUSAN',
-			'KODE_MATA_PELAJARAN',
 		];
 
 		$normalizedToIndex = [];
@@ -304,7 +344,13 @@ class LulusanExcelImportService
 			$map[$header] = $normalizedToIndex[$header];
 		}
 
-		$map['subject_start_column'] = $map['KODE_MATA_PELAJARAN'];
+		if (array_key_exists('RATA_RATA', $normalizedToIndex)) {
+			$map['subject_start_column'] = $normalizedToIndex['RATA_RATA'];
+		} elseif (array_key_exists('KODE_MATA_PELAJARAN', $normalizedToIndex)) {
+			$map['subject_start_column'] = $normalizedToIndex['KODE_MATA_PELAJARAN'];
+		} else {
+			throw new InvalidArgumentException("Header 'RATA-RATA' atau 'KODE MATA PELAJARAN' tidak ditemukan di baris 2 template.");
+		}
 
 		return $map;
 	}
@@ -373,7 +419,11 @@ class LulusanExcelImportService
 
 	protected function normalizeHeader(string $header): string
 	{
-		return strtoupper(str_replace(' ', '_', trim($header)));
+		$normalized = strtoupper(trim($header));
+		$normalized = str_replace([' ', '-'], '_', $normalized);
+		$normalized = preg_replace('/_+/', '_', $normalized) ?? $normalized;
+
+		return $normalized;
 	}
 
 	protected function toExcelColumnName(int $columnNumber): string

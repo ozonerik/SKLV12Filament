@@ -18,6 +18,10 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\Major;
+use App\Models\SchoolYear;
 
 class StudentResource extends Resource
 {
@@ -31,30 +35,37 @@ class StudentResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required(),
-                TextInput::make('pob')
-                    ->required(),
-                DatePicker::make('dob')
-                        ->native(false)
-                        ->locale('id')
-                    ->required()
-                    ->displayFormat('d/m/Y'),
-                TextInput::make('nis')
-                    ->required(),
-                TextInput::make('nisn')
-                    ->required(),
-                TextInput::make('father_name')
+                Select::make('school_year_id')
+                    ->relationship('schoolYear', 'name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Select::make('major_id')
                     ->relationship('major', 'kode_jurusan')
                     ->searchable()
                     ->preload()
                     ->required(),
-                Select::make('school_year_id')
-                    ->relationship('schoolYear', 'name')
-                    ->searchable()
-                    ->preload()
+                TextInput::make('nisn')
+                    ->required(),
+                TextInput::make('nis')
+                    ->required(),
+                TextInput::make('name')
+                    ->required(),
+                Select::make('jenis_kelamin')
+                    ->label('Jenis Kelamin')
+                    ->options([
+                        'L' => 'Laki-laki',
+                        'P' => 'Perempuan',
+                    ])
+                    ->required(),
+                TextInput::make('pob')
+                    ->required(),
+                DatePicker::make('dob')
+                    ->native(false)
+                    ->locale('id')
+                    ->required()
+                    ->displayFormat('d/m/Y'),
+                TextInput::make('father_name')
                     ->required(),
                 TextInput::make('password')
                     ->password()
@@ -69,27 +80,29 @@ class StudentResource extends Resource
         return $table
             ->recordTitleAttribute('name')
             ->columns([
+                TextColumn::make('schoolYear.name')
+                    ->label('Tahun Pelajaran')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('major.konsentrasi_keahlian')
+                    ->label('Jurusan')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('nisn')
+                    ->searchable(),
+                TextColumn::make('nis')
+                    ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('jenis_kelamin')
+                    ->label('Jenis Kelamin'),
                 TextColumn::make('pob')
                     ->searchable(),
                 TextColumn::make('dob')
                     ->date('d/m/Y')
                     ->sortable(),
-                TextColumn::make('nis')
-                    ->searchable(),
-                TextColumn::make('nisn')
-                    ->searchable(),
                 TextColumn::make('father_name')
                     ->searchable(),
-                TextColumn::make('major.kode_jurusan')
-                    ->label('Jurusan')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('schoolYear.name')
-                    ->label('Tahun Pelajaran')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
@@ -100,7 +113,30 @@ class StudentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('major_id')
+                    ->label('Jurusan')
+                    ->options(Major::query()->orderBy('konsentrasi_keahlian')->pluck('konsentrasi_keahlian', 'id')->all())
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (blank($data['value'] ?? null)) {
+                            return $query;
+                        }
+
+                        return $query->whereHas('student', function (Builder $studentQuery) use ($data): void {
+                            $studentQuery->where('major_id', $data['value']);
+                        });
+                    }),
+                SelectFilter::make('school_year_id')
+                    ->label('Tahun Pelajaran')
+                    ->options(SchoolYear::query()->orderBy('name')->pluck('name', 'id')->all())
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (blank($data['value'] ?? null)) {
+                            return $query;
+                        }
+
+                        return $query->whereHas('student', function (Builder $studentQuery) use ($data): void {
+                            $studentQuery->where('school_year_id', $data['value']);
+                        });
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
