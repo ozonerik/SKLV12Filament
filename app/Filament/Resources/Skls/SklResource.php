@@ -344,7 +344,8 @@ class SklResource extends Resource
             'verificationUrl' => $verificationUrl,
             'qrCodeDataUri' => $qrCodeDataUri,
             'school' => $school,
-        ])->setPaper([0, 0, 595.28, 935.43], 'portrait');
+        ])->setOption('isRemoteEnabled', true)
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
         $skl->forceFill([
             'downloaded_at' => now(),

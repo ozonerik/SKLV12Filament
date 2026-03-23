@@ -164,9 +164,10 @@ class KelulusanDanSkl extends Page
         $qrCodeDataUri = (new QRCode(new QROptions([
             'outputType' => QROutputInterface::GDIMAGE_PNG,
             'eccLevel' => QRCode::ECC_M,
-            'scale' => 5,
+            'scale' => 6,
             'outputBase64' => true,
-        ])))->render($verificationUrl);
+            'quietzoneSize' => 0,
+        ])))->render($verificationCode);
 
         $pdf = Pdf::loadView('pdf.skl', [
             'skl' => $skl,
@@ -181,7 +182,8 @@ class KelulusanDanSkl extends Page
             'verificationUrl' => $verificationUrl,
             'qrCodeDataUri' => $qrCodeDataUri,
             'school' => $school,
-        ])->setPaper([0, 0, 595.28, 935.43], 'portrait');
+        ])->setOption('isRemoteEnabled', true)
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
         $skl->forceFill([
             'downloaded_at' => now(),
