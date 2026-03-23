@@ -5,11 +5,18 @@ namespace App\Filament\Resources\Skls;
 use App\Filament\Resources\Skls\Pages\CreateSkl;
 use App\Filament\Resources\Skls\Pages\EditSkl;
 use App\Filament\Resources\Skls\Pages\ListSkls;
+use App\Models\Grade;
 use App\Models\Major;
+use App\Models\School;
 use App\Models\SchoolYear;
 use App\Models\Skl;
 use App\Models\Student;
 use BackedEnum;
+use Barryvdh\DomPDF\Facade\Pdf;
+use chillerlan\QRCode\Output\QROutputInterface;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
+use Filament\Actions\BulkAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -26,6 +33,9 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+use RuntimeException;
+use ZipArchive;
 
 class SklResource extends Resource
 {
@@ -204,9 +214,145 @@ class SklResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('download_selected_skl')
+                        ->label('Download SKL')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function (Collection $records) {
+                            if ($records->isEmpty()) {
+                                return null;
+                            }
+
+                            if ($records->count() === 1) {
+                                /** @var Skl $skl */
+                                $skl = $records->first();
+                                [$pdfOutput, $filename] = self::buildSklPdf($skl);
+
+                                return response()->streamDownload(
+                                    fn () => print($pdfOutput),
+                                    $filename,
+                                    ['Content-Type' => 'application/pdf']
+                                );
+                            }
+
+                            $zipFileName = 'SKL-selected-' . now()->format('Ymd-His') . '.zip';
+                            $tempDirectory = storage_path('app/temp');
+                            if (! is_dir($tempDirectory)) {
+                                mkdir($tempDirectory, 0775, true);
+                            }
+
+                            $zipPath = $tempDirectory . DIRECTORY_SEPARATOR . $zipFileName;
+                            $zip = new ZipArchive();
+
+                            if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+                                throw new RuntimeException('Gagal membuat file ZIP untuk unduhan SKL.');
+                            }
+
+                            foreach ($records as $index => $skl) {
+                                [$pdfOutput, $filename] = self::buildSklPdf($skl, $index + 1);
+                                $zip->addFromString($filename, $pdfOutput);
+                            }
+
+                            $zip->close();
+
+                            return response()->streamDownload(
+                                function () use ($zipPath): void {
+                                    $stream = fopen($zipPath, 'rb');
+                                    if ($stream !== false) {
+                                        fpassthru($stream);
+                                        fclose($stream);
+                                    }
+
+                                    if (file_exists($zipPath)) {
+                                        unlink($zipPath);
+                                    }
+                                },
+                                $zipFileName,
+                                ['Content-Type' => 'application/zip']
+                            );
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    protected static function buildSklPdf(Skl $skl, ?int $fallbackIndex = null): array
+    {
+        $skl->loadMissing(['student.major', 'student.schoolYear.headmaster']);
+
+        $student = $skl->student;
+        $schoolYear = $student?->schoolYear;
+        $headmaster = $schoolYear?->headmaster;
+        $major = $student?->major;
+
+        $grades = Grade::query()
+            ->where('student_id', $skl->student_id)
+            ->with('subject')
+            ->get();
+
+        $categoryOrder = [
+            'Umum' => 1,
+            'Kejuruan' => 2,
+            'Pilihan' => 3,
+            'Mulok' => 4,
+        ];
+
+        $grades = $grades
+            ->sortBy(function (Grade $grade) use ($categoryOrder): array {
+                $category = (string) ($grade->subject?->category ?? '');
+
+                return [
+                    $categoryOrder[$category] ?? 99,
+                    (string) ($grade->subject?->kode ?? ''),
+                    (string) ($grade->subject?->name ?? ''),
+                ];
+            })
+            ->values();
+
+        $groupedGrades = collect([
+            'Umum' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Umum')->values(),
+            'Kejuruan' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Kejuruan')->values(),
+            'Pilihan' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Pilihan')->values(),
+            'Mulok' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Mulok')->values(),
+        ]);
+
+        $average = (float) ($grades->avg('score') ?? 0);
+        $verificationCode = $skl->ensureVerificationCode();
+        $verificationUrl = route('skl.verify.show', ['code' => $verificationCode]);
+        $school = School::query()->first();
+
+        $qrCodeDataUri = (new QRCode(new QROptions([
+            'outputType' => QROutputInterface::GDIMAGE_PNG,
+            'eccLevel' => QRCode::ECC_M,
+            'scale' => 5,
+            'outputBase64' => true,
+        ])))->render($verificationUrl);
+
+        $pdf = Pdf::loadView('pdf.skl', [
+            'skl' => $skl,
+            'student' => $student,
+            'schoolYear' => $schoolYear,
+            'major' => $major,
+            'headmaster' => $headmaster,
+            'grades' => $grades,
+            'groupedGrades' => $groupedGrades,
+            'averageScore' => $average,
+            'verificationCode' => $verificationCode,
+            'verificationUrl' => $verificationUrl,
+            'qrCodeDataUri' => $qrCodeDataUri,
+            'school' => $school,
+        ])->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $skl->forceFill([
+            'downloaded_at' => now(),
+        ])->save();
+
+        $filenameSuffix = $student?->nisn ?: $verificationCode ?: (string) ($fallbackIndex ?? $skl->getKey());
+
+        return [$pdf->output(), "SKL-{$filenameSuffix}.pdf"];
     }
 
     public static function getRelations(): array

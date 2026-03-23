@@ -140,12 +140,22 @@
                     <div class="px-8 py-6 divide-y divide-gray-100">
                         @php
                             $avgScore = $skl->student?->grades->avg('score');
+                            $jenisKelamin = match ($skl->student?->jenis_kelamin) {
+                                'L' => 'Laki-laki',
+                                'P' => 'Perempuan',
+                                default => '-',
+                            };
                             $rows = [
                                 ['label' => 'Kode Verifikasi', 'icon' => 'fa-key',          'value' => $skl->verification_code],
                                 ['label' => 'Nomor SKL',       'icon' => 'fa-file-alt',      'value' => $skl->letter_number ?? '-'],
                                 ['label' => 'Tanggal Surat',   'icon' => 'fa-calendar-day',  'value' => $skl->letter_date?->format('d/m/Y') ?? '-'],
                                 ['label' => 'Nama Siswa',      'icon' => 'fa-user',          'value' => $skl->student?->name ?? '-'],
                                 ['label' => 'NISN',            'icon' => 'fa-id-badge',      'value' => $skl->student?->nisn ?? '-'],
+                                ['label' => 'NIS',             'icon' => 'fa-address-card',  'value' => $skl->student?->nis ?? '-'],
+                                ['label' => 'Tempat Lahir',    'icon' => 'fa-map-marker-alt','value' => $skl->student?->pob ?? '-'],
+                                ['label' => 'Tanggal Lahir',   'icon' => 'fa-calendar',      'value' => $skl->student?->dob ? \Carbon\Carbon::parse($skl->student->dob)->format('d/m/Y') : '-'],
+                                ['label' => 'Jenis Kelamin',   'icon' => 'fa-venus-mars',    'value' => $jenisKelamin],
+                                ['label' => 'Nama Ayah',       'icon' => 'fa-user-tie',      'value' => $skl->student?->father_name ?? '-'],
                                 ['label' => 'Jurusan',         'icon' => 'fa-book',          'value' => $skl->student?->major?->konsentrasi_keahlian ?? '-'],
                                 ['label' => 'Tahun Pelajaran', 'icon' => 'fa-calendar-alt',  'value' => $skl->student?->schoolYear?->name ?? '-'],
                                 ['label' => 'Status Kelulusan','icon' => 'fa-graduation-cap','value' => $skl->status ?? '-'],

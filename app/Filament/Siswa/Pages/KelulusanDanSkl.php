@@ -45,11 +45,34 @@ class KelulusanDanSkl extends Page
     public function content(Schema $schema): Schema
     {
         $skl = $this->getSkl();
+        $student = $skl->student;
         $average = $this->getAverageScore();
 
         return $schema->components([
             Section::make('Status Kelulusan')
                 ->schema([
+                    \Filament\Infolists\Components\TextEntry::make('student_name')
+                        ->label('Nama Siswa')
+                        ->state($student?->name ?? '-'),
+                    \Filament\Infolists\Components\TextEntry::make('student_nisn')
+                        ->label('NISN')
+                        ->state($student?->nisn ?? '-'),
+                    \Filament\Infolists\Components\TextEntry::make('student_nis')
+                        ->label('NIS')
+                        ->state($student?->nis ?? '-'),
+                    \Filament\Infolists\Components\TextEntry::make('student_jenis_kelamin')
+                        ->label('Jenis Kelamin')
+                        ->state(match ($student?->jenis_kelamin) {
+                            'L' => 'Laki-laki',
+                            'P' => 'Perempuan',
+                            default => '-',
+                        }),
+                    \Filament\Infolists\Components\TextEntry::make('student_ttl')
+                        ->label('Tempat, Tanggal Lahir')
+                        ->state(($student?->pob ?? '-') . ', ' . ($student?->dob ? \Carbon\Carbon::parse($student->dob)->translatedFormat('d F Y') : '-')),
+                    \Filament\Infolists\Components\TextEntry::make('student_father_name')
+                        ->label('Nama Ayah')
+                        ->state($student?->father_name ?? '-'),
                     \Filament\Infolists\Components\TextEntry::make('letter_number')
                         ->label('Nomor Surat')
                         ->state($skl->letter_number),
@@ -69,7 +92,8 @@ class KelulusanDanSkl extends Page
                         ->state($skl->isPublished()
                             ? 'Anda sudah bisa mengunduh SKL.'
                             : 'SKL belum dibuka. Silakan cek kembali sesuai jadwal.'),
-                ]),
+                ])
+                ->columns(2),
         ]);
     }
 
