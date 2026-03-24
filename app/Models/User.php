@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     use HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
         'email',
+        'photo',
         'password',
         'is_admin',
     ];
@@ -38,5 +40,14 @@ class User extends Authenticatable implements FilamentUser
         }
 
         return true;
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        if (blank($this->photo)) {
+            return null;
+        }
+
+        return asset('storage/' . ltrim($this->photo, '/'));
     }
 }

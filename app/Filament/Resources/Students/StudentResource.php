@@ -29,6 +29,12 @@ class StudentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Siswa';
+
+    protected static ?string $pluralModelLabel = 'Siswa';
+
+    protected static ?string $navigationLabel = 'Siswa';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
@@ -37,19 +43,24 @@ class StudentResource extends Resource
             ->components([
                 Select::make('school_year_id')
                     ->relationship('schoolYear', 'name')
+                    ->label('Tahun Pelajaran')
                     ->searchable()
                     ->preload()
                     ->required(),
                 Select::make('major_id')
                     ->relationship('major', 'kode_jurusan')
+                    ->label('Jurusan')
                     ->searchable()
                     ->preload()
                     ->required(),
                 TextInput::make('nisn')
+                    ->label('NISN')
                     ->required(),
                 TextInput::make('nis')
+                    ->label('NIS')
                     ->required(),
                 TextInput::make('name')
+                    ->label('Nama')
                     ->required(),
                 Select::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
@@ -59,13 +70,16 @@ class StudentResource extends Resource
                     ])
                     ->required(),
                 TextInput::make('pob')
+                    ->label('Tempat Lahir')
                     ->required(),
                 DatePicker::make('dob')
+                    ->label('Tanggal Lahir')
                     ->native(false)
                     ->locale('id')
                     ->required()
                     ->displayFormat('d/m/Y'),
                 TextInput::make('father_name')
+                    ->label('Nama Ayah')
                     ->required(),
                 TextInput::make('password')
                     ->password()
@@ -89,19 +103,24 @@ class StudentResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('nisn')
+                    ->label('NISN')
                     ->searchable(),
                 TextColumn::make('nis')
+                    ->label('NIS')
                     ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('jenis_kelamin')
                     ->label('Jenis Kelamin'),
                 TextColumn::make('pob')
+                    ->label('Tempat Lahir')
                     ->searchable(),
                 TextColumn::make('dob')
                     ->date('d/m/Y')
+                    ->label('Tanggal Lahir')
                     ->sortable(),
                 TextColumn::make('father_name')
+                    ->label('Nama Ayah')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')
@@ -159,6 +178,8 @@ class StudentResource extends Resource
     {
         return 'Main';
     }
+
+
 
     public static function getNavigationSort(): ?int
     {

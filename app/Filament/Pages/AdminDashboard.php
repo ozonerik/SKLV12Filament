@@ -24,7 +24,7 @@ class AdminDashboard extends Dashboard
 {
     use HasFiltersForm;
 
-    protected static ?string $title = 'Dashboard Admin';
+    protected static ?string $title = 'Dashboard';
 
     public function filtersForm(Schema $schema): Schema
     {

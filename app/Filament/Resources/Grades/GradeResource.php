@@ -28,6 +28,12 @@ class GradeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Nilai';
+
+    protected static ?string $pluralModelLabel = 'Nilai';
+
+    protected static ?string $navigationLabel = 'Nilai';
+
     protected static ?string $recordTitleAttribute = 'id';
 
     public static function form(Schema $schema): Schema
@@ -68,10 +74,12 @@ class GradeResource extends Resource
                     ->required(),
                 Select::make('subject_id')
                     ->relationship('subject', 'kode')
+                    ->label('Mata Pelajaran')
                     ->searchable()
                     ->preload()
                     ->required(),
                 TextInput::make('score')
+                    ->label('Nilai')
                     ->required()
                     ->minValue(0)
                     ->maxValue(100)
@@ -85,7 +93,7 @@ class GradeResource extends Resource
             ->recordTitleAttribute('id')
             ->columns([
                 TextColumn::make('student.schoolYear.name')
-                    ->label('Tahun Ajaran')
+                    ->label('Tahun Pelajaran')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('student.major.kode_jurusan')
@@ -109,6 +117,7 @@ class GradeResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('score')
+                    ->label('Nilai')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
@@ -120,7 +129,7 @@ class GradeResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-->filters([
+            ->filters([
                 SelectFilter::make('major_id')
                     ->label('Jurusan')
                     ->options(Major::query()->orderBy('konsentrasi_keahlian')->pluck('konsentrasi_keahlian', 'id')->all())

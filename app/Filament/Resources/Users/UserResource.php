@@ -1,38 +1,31 @@
 <?php
 
-namespace App\Filament\Resources\Headmasters;
+namespace App\Filament\Resources\Users;
 
-use App\Filament\Resources\Headmasters\Pages\CreateHeadmaster;
-use App\Filament\Resources\Headmasters\Pages\EditHeadmaster;
-use App\Filament\Resources\Headmasters\Pages\ListHeadmasters;
-use App\Models\Headmaster;
-use Filament\Forms\Components\FileUpload; // Import initially untuk FileUpload, tapi kita akan menggunakan TextInput untuk menyimpan path/URL tanda tangan
+use App\Filament\Resources\Users\Pages\CreateUser;
+use App\Filament\Resources\Users\Pages\EditUser;
+use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Models\User;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-//use Filament\Forms\Form; // Menggunakan Form untuk mendefinisikan form secara lebih fleksibel
-use Filament\Tables\Columns\ImageColumn; // Tambahkan untuk menampilkan gambar di tabel
 
-class HeadmasterResource extends Resource
+class UserResource extends Resource
 {
-    protected static ?string $model = Headmaster::class;
+    protected static ?string $model = User::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
-    protected static ?string $modelLabel = 'Kepala Sekolah';
-
-    protected static ?string $pluralModelLabel = 'Kepala Sekolah';
-
-    protected static ?string $navigationLabel = 'Kepala Sekolah';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -41,14 +34,15 @@ class HeadmasterResource extends Resource
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
-                TextInput::make('rank')
-                    ->required(),
-                TextInput::make('nip')
-                    ->required(),
-                // Perubahan di sini: Menggunakan FileUpload
-                FileUpload::make('ttd')
-                    ->label('Tanda Tangan')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255)
+                    ->unique(ignorable: fn (?User $record) => $record),
+                FileUpload::make('photo')
+                    ->label('Foto')
                     ->image()
                     ->acceptedFileTypes([
                         'image/jpeg',
@@ -56,9 +50,17 @@ class HeadmasterResource extends Resource
                         'image/webp',
                     ])
                     ->disk('public')
-                    ->directory('headmasters/signatures')
-                    ->required(),
-                Toggle::make('is_active')
+                    ->directory('users/photos')
+                    ->nullable(),
+                TextInput::make('password')
+                    ->password()
+                    ->revealable(filament()->arePasswordsRevealable())
+                    ->minLength(8)
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (?string $state): bool => filled($state)),
+                Toggle::make('is_admin')
+                    ->label('Admin')
+                    ->default(false)
                     ->required(),
             ]);
     }
@@ -68,19 +70,16 @@ class HeadmasterResource extends Resource
         return $table
             ->recordTitleAttribute('name')
             ->columns([
+                ImageColumn::make('photo')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->circular(),
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('rank')
+                TextColumn::make('email')
                     ->searchable(),
-                TextColumn::make('nip')
-                    ->searchable(),
-                // Menampilkan preview tanda tangan di tabel
-                ImageColumn::make('ttd')
-                    ->label('Tanda Tangan')
-                    ->disk('public') // Pastikan ini sesuai dengan disk yang digunakan di FileUpload
-                    //->directory('headmasters/signatures') // Pastikan ini sesuai dengan directory yang digunakan di
-                    ->visibility('public'),
-                IconColumn::make('is_active')
+                IconColumn::make('is_admin')
+                    ->label('Admin')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')
@@ -118,15 +117,20 @@ class HeadmasterResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 2;
+        return 5;
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Manajemen User';
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => ListHeadmasters::route('/'),
-            'create' => CreateHeadmaster::route('/create'),
-            'edit' => EditHeadmaster::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 }

@@ -24,6 +24,12 @@ class SchoolYearResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Tahun Pelajaran';
+
+    protected static ?string $pluralModelLabel = 'Tahun Pelajaran';
+
+    protected static ?string $navigationLabel = 'Tahun Pelajaran';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema

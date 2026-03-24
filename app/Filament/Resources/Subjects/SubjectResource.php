@@ -23,6 +23,13 @@ class SubjectResource extends Resource
     protected static ?string $model = Subject::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    
+    protected static ?string $modelLabel = 'Mata Pelajaran';
+
+    protected static ?string $pluralModelLabel = 'Mata Pelajaran';
+
+    protected static ?string $navigationLabel = 'Mata Pelajaran';
+
 
     protected static ?string $recordTitleAttribute = 'name';
 

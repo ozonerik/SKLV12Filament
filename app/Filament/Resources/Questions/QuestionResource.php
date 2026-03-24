@@ -26,6 +26,12 @@ class QuestionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Pertanyaan';
+
+    protected static ?string $pluralModelLabel = 'Pertanyaan';
+
+    protected static ?string $navigationLabel = 'Pertanyaan';
+
     protected static ?string $recordTitleAttribute = 'question_text';
 
     public static function form(Schema $schema): Schema

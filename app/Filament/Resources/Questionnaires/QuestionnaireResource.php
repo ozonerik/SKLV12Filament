@@ -30,6 +30,12 @@ class QuestionnaireResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Kuesioner';
+
+    protected static ?string $pluralModelLabel = 'Kuesioner';
+
+    protected static ?string $navigationLabel = 'Kuesioner';
+
     protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema
@@ -48,13 +54,13 @@ class QuestionnaireResource extends Resource
                     ->helperText('Kuesioner ini hanya akan tampil untuk siswa pada tahun pelajaran yang dipilih.')
                     ->required(),
                 DatePicker::make('start_date')
-                        ->native(false)
-                        ->locale('id')
+                    ->native(false)
+                    ->locale('id')
                     ->required()
                     ->displayFormat('d/m/Y'),
                 DatePicker::make('end_date')
-                        ->native(false)
-                        ->locale('id')
+                    ->native(false)
+                    ->locale('id')
                     ->required()
                     ->displayFormat('d/m/Y'),
                 Toggle::make('is_active')

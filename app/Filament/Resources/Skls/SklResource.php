@@ -43,6 +43,12 @@ class SklResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'SKL';
+
+    protected static ?string $pluralModelLabel = 'SKL';
+
+    protected static ?string $navigationLabel = 'SKL';
+
     protected static ?string $recordTitleAttribute = 'letter_number';
 
     public static function form(Schema $schema): Schema
@@ -228,7 +234,7 @@ class SklResource extends Resource
                                 [$pdfOutput, $filename] = self::buildSklPdf($skl);
 
                                 return response()->streamDownload(
-                                    fn () => print($pdfOutput),
+                                    fn() => print($pdfOutput),
                                     $filename,
                                     ['Content-Type' => 'application/pdf']
                                 );
@@ -313,10 +319,10 @@ class SklResource extends Resource
             ->values();
 
         $groupedGrades = collect([
-            'Umum' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Umum')->values(),
-            'Kejuruan' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Kejuruan')->values(),
-            'Pilihan' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Pilihan')->values(),
-            'Mulok' => $grades->filter(fn (Grade $grade) => ($grade->subject?->category ?? null) === 'Mulok')->values(),
+            'Umum' => $grades->filter(fn(Grade $grade) => ($grade->subject?->category ?? null) === 'Umum')->values(),
+            'Kejuruan' => $grades->filter(fn(Grade $grade) => ($grade->subject?->category ?? null) === 'Kejuruan')->values(),
+            'Pilihan' => $grades->filter(fn(Grade $grade) => ($grade->subject?->category ?? null) === 'Pilihan')->values(),
+            'Mulok' => $grades->filter(fn(Grade $grade) => ($grade->subject?->category ?? null) === 'Mulok')->values(),
         ]);
 
         $average = (float) ($grades->avg('score') ?? 0);

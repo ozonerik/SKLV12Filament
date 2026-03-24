@@ -23,6 +23,12 @@ class MajorResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Jurusan';
+
+    protected static ?string $pluralModelLabel = 'Jurusan';
+
+    protected static ?string $navigationLabel = 'Jurusan';
+
     protected static ?string $recordTitleAttribute = 'program_keahlian';
 
     public static function form(Schema $schema): Schema
@@ -37,7 +43,7 @@ class MajorResource extends Resource
                     ->required(),
                 TextInput::make('kode_jurusan')
                     ->required()
-                    ->unique(ignorable: fn (?Major $record) => $record),
+                    ->unique(ignorable: fn(?Major $record) => $record),
             ]);
     }
 
