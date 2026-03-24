@@ -121,6 +121,7 @@ class GradeResource extends Resource
     {
         return $table
             ->recordTitleAttribute('id')
+            ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('student.schoolYear.name')
                     ->label('Tahun Pelajaran')

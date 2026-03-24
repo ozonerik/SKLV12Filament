@@ -51,6 +51,7 @@ class MajorResource extends Resource
     {
         return $table
             ->recordTitleAttribute('program_keahlian')
+            ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('bidang_keahlian')
                     ->searchable(),

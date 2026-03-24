@@ -6,6 +6,7 @@ use App\Filament\Resources\Schools\Pages\EditSchool;
 use App\Filament\Resources\Schools\Pages\ListSchools;
 use App\Models\School;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
@@ -106,35 +107,64 @@ class SchoolResource extends Resource
     {
         return $table
             ->recordTitleAttribute('name')
+            ->persistColumnsInSession(false)
+            ->columnManagerTriggerAction(fn(Action $action): Action => $action->label('Pilih Kolom'))
             ->columns([
                 TextColumn::make('name')
                     ->label('Nama Sekolah')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 ImageColumn::make('province_logo')
                     ->label('Logo Provinsi')
                     ->disk('public')
                     ->square()
-                    ->size(56),
+                    ->toggleable(),
                 ImageColumn::make('school_logo')
                     ->label('Logo Sekolah')
                     ->disk('public')
                     ->square()
-                    ->size(56),
+                    ->toggleable(),
                 ImageColumn::make('school_stamp')
                     ->label('Stamp Sekolah')
                     ->disk('public')
                     ->square()
-                    ->size(56),
+                    ->toggleable(),
+                TextColumn::make('address')
+                    ->label('Alamat Sekolah')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('city')
+                    ->label('Kab/Kota')
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('postal_code')
+                    ->label('Kodepos')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('website')
+                    ->label('Website')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('phone')
+                    ->label('Telp')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('province')
                     ->label('Provinsi')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('kcd_wilayah')
                     ->label('KCD Wilayah')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('updated_at')
-                    ->label('Terakhir Diubah')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
                 EditAction::make(),

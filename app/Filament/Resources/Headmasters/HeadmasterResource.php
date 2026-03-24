@@ -67,6 +67,7 @@ class HeadmasterResource extends Resource
     {
         return $table
             ->recordTitleAttribute('name')
+            ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),

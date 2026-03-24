@@ -38,20 +38,24 @@ class AnswerResource extends Resource
             ->components([
                 Select::make('student_id')
                     ->relationship('student', 'name')
+                    ->label('Siswa')
                     ->searchable()
                     ->preload()
                     ->required(),
                 Select::make('question_id')
                     ->relationship('question', 'question_text')
+                    ->label('Pertanyaan')
                     ->searchable()
                     ->preload()
                     ->required(),
                 Select::make('question_option_id')
                     ->relationship('option', 'option_text')
+                    ->label('Jawaban (Pilihan ganda)')
                     ->searchable()
                     ->preload()
                     ->nullable(),
                 Textarea::make('answer_text')
+                    ->label('Jawaban (Essay)')
                     ->columnSpanFull(),
             ]);
     }
@@ -60,6 +64,7 @@ class AnswerResource extends Resource
     {
         return $table
             ->recordTitleAttribute('id')
+            ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('student.name')
                     ->label('Siswa')
@@ -71,7 +76,7 @@ class AnswerResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('option.option_text')
-                    ->label('Opsi')
+                    ->label('Jawaban (Pilihan ganda)')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('answer_text')

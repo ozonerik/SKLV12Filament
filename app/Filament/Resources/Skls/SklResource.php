@@ -120,6 +120,7 @@ class SklResource extends Resource
         return $table
             ->defaultSort('published_at', 'desc')
             ->recordTitleAttribute('letter_number')
+            ->persistColumnsInSession(false)
             ->columns([
                 // Menampilkan Tahun Pelajaran dari relasi Student -> SchoolYear
                 TextColumn::make('student.schoolYear.name')

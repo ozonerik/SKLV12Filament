@@ -74,6 +74,7 @@ class StudentResource extends Resource
                     ->required(),
                 DatePicker::make('dob')
                     ->label('Tanggal Lahir')
+                    ->closeOnDateSelection()
                     ->native(false)
                     ->locale('id')
                     ->required()
@@ -93,6 +94,7 @@ class StudentResource extends Resource
     {
         return $table
             ->recordTitleAttribute('name')
+            ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('schoolYear.name')
                     ->label('Tahun Pelajaran')

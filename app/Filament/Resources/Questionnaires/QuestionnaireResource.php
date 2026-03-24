@@ -81,6 +81,7 @@ class QuestionnaireResource extends Resource
     {
         return $table
             ->recordTitleAttribute('title')
+            ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('title')
                     ->label('Judul')

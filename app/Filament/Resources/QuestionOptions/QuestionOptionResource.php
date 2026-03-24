@@ -24,11 +24,11 @@ class QuestionOptionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $modelLabel = 'Pilihan Pertanyaan';
+    protected static ?string $modelLabel = 'Pilihan Jawaban';
 
-    protected static ?string $pluralModelLabel = 'Pilihan Pertanyaan';
+    protected static ?string $pluralModelLabel = 'Pilihan Jawaban';
 
-    protected static ?string $navigationLabel = 'Pilihan Pertanyaan';
+    protected static ?string $navigationLabel = 'Pilihan Jawaban';
 
     protected static ?string $recordTitleAttribute = 'option_text';
 
@@ -38,10 +38,14 @@ class QuestionOptionResource extends Resource
             ->components([
                 Select::make('question_id')
                     ->relationship('question', 'question_text')
+                    ->label('Pertanyaan')
+                    ->wrap()
                     ->searchable()
                     ->preload()
                     ->required(),
                 TextInput::make('option_text')
+                    ->label('Pilihan Jawaban')
+                    ->wrap()
                     ->required(),
             ]);
     }
@@ -50,6 +54,7 @@ class QuestionOptionResource extends Resource
     {
         return $table
             ->recordTitleAttribute('option_text')
+            ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('question.question_text')
                     ->label('Pertanyaan')
@@ -57,6 +62,8 @@ class QuestionOptionResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('option_text')
+                    ->label('Pilihan Jawaban')
+                    ->wrap()
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')

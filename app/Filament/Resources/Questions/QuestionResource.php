@@ -70,6 +70,7 @@ class QuestionResource extends Resource
     {
         return $table
             ->recordTitleAttribute('question_text')
+            ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('questionnaire.title')
                     ->label('Kuesioner')

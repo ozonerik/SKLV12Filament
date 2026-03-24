@@ -69,6 +69,7 @@ class UserResource extends Resource
     {
         return $table
             ->recordTitleAttribute('name')
+            ->persistColumnsInSession(false)
             ->columns([
                 ImageColumn::make('photo')
                     ->label('Foto')
