@@ -18,6 +18,7 @@ use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class AdminDashboard extends Dashboard
@@ -54,12 +55,16 @@ class AdminDashboard extends Dashboard
             return $widgets;
         }
 
-        $questions = Question::query()
-            ->where('type', 'pg')
-            ->whereHas('questionnaire', fn (Builder $query) => $query->where('school_year_id', $schoolYearId))
-            ->orderBy('order')
-            ->get(['id', 'question_text'])
-            ->values();
+        $questions = Cache::remember(
+            "dashboard:question-list:{$schoolYearId}",
+            now()->addMinutes(3),
+            fn () => Question::query()
+                ->where('type', 'pg')
+                ->whereHas('questionnaire', fn (Builder $query) => $query->where('school_year_id', $schoolYearId))
+                ->orderBy('order')
+                ->get(['id', 'question_text'])
+                ->values()
+        );
 
         foreach ($questions as $index => $question) {
             $widgets[] = QuestionDistributionPieChart::make([

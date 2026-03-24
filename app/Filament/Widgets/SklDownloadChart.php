@@ -6,11 +6,13 @@ use App\Filament\Widgets\Concerns\InteractsWithAdminDashboardFilters;
 use App\Models\Skl;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class SklDownloadChart extends ChartWidget
 {
     use InteractsWithAdminDashboardFilters;
+
+    protected ?string $pollingInterval = null;
 
     protected int | string | array $columnSpan = 1;
 
@@ -36,20 +38,23 @@ class SklDownloadChart extends ChartWidget
             ];
         }
 
-        $baseQuery = Skl::query()
-            ->whereHas('student', fn (Builder $query) => $query->where('school_year_id', $schoolYearId));
+        ['downloaded' => $downloaded, 'not_downloaded' => $notDownloaded] = Cache::remember(
+            "dashboard:skl-download:{$schoolYearId}",
+            now()->addMinutes(3),
+            function () use ($schoolYearId): array {
+                $result = Skl::query()
+                    ->join('students', 'students.id', '=', 'skls.student_id')
+                    ->where('students.school_year_id', $schoolYearId)
+                    ->selectRaw("SUM(CASE WHEN skls.downloaded_at IS NOT NULL OR skls.verification_code IS NOT NULL THEN 1 ELSE 0 END) as downloaded")
+                    ->selectRaw("SUM(CASE WHEN skls.downloaded_at IS NULL AND skls.verification_code IS NULL THEN 1 ELSE 0 END) as not_downloaded")
+                    ->first();
 
-        $downloaded = (clone $baseQuery)
-            ->where(function (Builder $query): void {
-                $query->whereNotNull('downloaded_at')
-                    ->orWhereNotNull('verification_code');
-            })
-            ->count();
-
-        $notDownloaded = (clone $baseQuery)
-            ->whereNull('downloaded_at')
-            ->whereNull('verification_code')
-            ->count();
+                return [
+                    'downloaded' => (int) ($result?->downloaded ?? 0),
+                    'not_downloaded' => (int) ($result?->not_downloaded ?? 0),
+                ];
+            }
+        );
 
         return [
             'labels' => ['Sudah Download', 'Belum Download'],

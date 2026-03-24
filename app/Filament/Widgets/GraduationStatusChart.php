@@ -5,12 +5,14 @@ namespace App\Filament\Widgets;
 use App\Filament\Widgets\Concerns\InteractsWithAdminDashboardFilters;
 use App\Models\Skl;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Cache;
 
 class GraduationStatusChart extends ChartWidget
 {
     use InteractsWithAdminDashboardFilters;
+
+    protected ?string $pollingInterval = null;
 
     protected int | string | array $columnSpan = 1;
 
@@ -35,16 +37,23 @@ class GraduationStatusChart extends ChartWidget
             ];
         }
 
-        $baseQuery = Skl::query()
-            ->whereHas('student', fn (Builder $query) => $query->where('school_year_id', $schoolYearId));
+        ['lulus' => $lulus, 'tidak_lulus' => $tidakLulus] = Cache::remember(
+            "dashboard:graduation-status:{$schoolYearId}",
+            now()->addMinutes(3),
+            function () use ($schoolYearId): array {
+                $result = Skl::query()
+                    ->join('students', 'students.id', '=', 'skls.student_id')
+                    ->where('students.school_year_id', $schoolYearId)
+                    ->selectRaw("SUM(CASE WHEN skls.status = 'Lulus' THEN 1 ELSE 0 END) as lulus")
+                    ->selectRaw("SUM(CASE WHEN LOWER(skls.status) = 'tidak lulus' THEN 1 ELSE 0 END) as tidak_lulus")
+                    ->first();
 
-        $lulus = (clone $baseQuery)
-            ->where('status', 'Lulus')
-            ->count();
-
-        $tidakLulus = (clone $baseQuery)
-            ->whereIn('status', ['Tidak Lulus', 'Tidak lulus'])
-            ->count();
+                return [
+                    'lulus' => (int) ($result?->lulus ?? 0),
+                    'tidak_lulus' => (int) ($result?->tidak_lulus ?? 0),
+                ];
+            }
+        );
 
         return [
             'labels' => ['Lulus', 'Tidak Lulus'],

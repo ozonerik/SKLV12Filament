@@ -8,10 +8,40 @@ use Filament\Panel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Services\ImageCompressionService;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     use HasFactory, Notifiable;
+
+    protected static function booted(): void
+    {
+        static::saved(function (self $user): void {
+            if (filled($user->photo)) {
+                ImageCompressionService::compress($user->photo, 'public');
+            }
+        });
+
+        static::updating(function (self $user): void {
+            if (! $user->isDirty('photo')) {
+                return;
+            }
+
+            $oldPath = $user->getOriginal('photo');
+            $newPath = $user->photo;
+
+            if (filled($oldPath) && $oldPath !== $newPath) {
+                Storage::disk('public')->delete($oldPath);
+            }
+        });
+
+        static::deleted(function (self $user): void {
+            if (filled($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
+        });
+    }
 
     protected $fillable = [
         'name',

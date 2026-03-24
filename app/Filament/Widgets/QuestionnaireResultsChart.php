@@ -7,11 +7,14 @@ use App\Models\Answer;
 use App\Models\Question;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class QuestionnaireResultsChart extends ChartWidget
 {
     use InteractsWithAdminDashboardFilters;
+
+    protected ?string $pollingInterval = null;
 
     protected int | string | array $columnSpan = 'full';
 
@@ -37,86 +40,92 @@ class QuestionnaireResultsChart extends ChartWidget
             ];
         }
 
-        $questions = Question::query()
-            ->where('type', 'pg')
-            ->whereHas('questionnaire', fn ($query) => $query->where('school_year_id', $schoolYearId))
-            ->with(['options' => fn ($query) => $query->orderBy('id')])
-            ->orderBy('order')
-            ->get();
+        return Cache::remember(
+            "dashboard:questionnaire-results:{$schoolYearId}",
+            now()->addMinutes(3),
+            function () use ($schoolYearId): array {
+                $questions = Question::query()
+                    ->where('type', 'pg')
+                    ->whereHas('questionnaire', fn ($query) => $query->where('school_year_id', $schoolYearId))
+                    ->with(['options' => fn ($query) => $query->orderBy('id')])
+                    ->orderBy('order')
+                    ->get();
 
-        if ($questions->isEmpty()) {
-            return [
-                'labels' => ['Belum ada pertanyaan pilihan ganda'],
-                'datasets' => [[
-                    'label' => 'Opsi A',
-                    'data' => [0],
-                    'backgroundColor' => ['#cbd5e1'],
-                ]],
-            ];
-        }
+                if ($questions->isEmpty()) {
+                    return [
+                        'labels' => ['Belum ada pertanyaan pilihan ganda'],
+                        'datasets' => [[
+                            'label' => 'Opsi A',
+                            'data' => [0],
+                            'backgroundColor' => ['#cbd5e1'],
+                        ]],
+                    ];
+                }
 
-        $counts = Answer::query()
-            ->selectRaw('answers.question_id, question_options.option_text as option_text, COUNT(*) as total')
-            ->join('questions', 'questions.id', '=', 'answers.question_id')
-            ->join('questionnaires', 'questionnaires.id', '=', 'questions.questionnaire_id')
-            ->join('students', 'students.id', '=', 'answers.student_id')
-            ->join('question_options', 'question_options.id', '=', 'answers.question_option_id')
-            ->whereNotNull('answers.question_option_id')
-            ->where('questionnaires.school_year_id', $schoolYearId)
-            ->where('students.school_year_id', $schoolYearId)
-            ->groupBy('answers.question_id', 'question_options.option_text')
-            ->get();
+                $counts = Answer::query()
+                    ->selectRaw('answers.question_id, question_options.option_text as option_text, COUNT(*) as total')
+                    ->join('questions', 'questions.id', '=', 'answers.question_id')
+                    ->join('questionnaires', 'questionnaires.id', '=', 'questions.questionnaire_id')
+                    ->join('students', 'students.id', '=', 'answers.student_id')
+                    ->join('question_options', 'question_options.id', '=', 'answers.question_option_id')
+                    ->whereNotNull('answers.question_option_id')
+                    ->where('questionnaires.school_year_id', $schoolYearId)
+                    ->where('students.school_year_id', $schoolYearId)
+                    ->groupBy('answers.question_id', 'question_options.option_text')
+                    ->get();
 
-        $countsMap = $counts->mapWithKeys(
-            fn ($row) => [((string) $row->question_id . ':' . (string) $row->option_text) => (int) $row->total]
-        );
+                $countsMap = $counts->mapWithKeys(
+                    fn ($row) => [((string) $row->question_id . ':' . (string) $row->option_text) => (int) $row->total]
+                );
 
-        $optionTexts = $questions
-            ->flatMap(fn ($question) => $question->options->pluck('option_text'))
-            ->filter(fn ($optionText) => filled($optionText))
-            ->unique()
-            ->values();
+                $optionTexts = $questions
+                    ->flatMap(fn ($question) => $question->options->pluck('option_text'))
+                    ->filter(fn ($optionText) => filled($optionText))
+                    ->unique()
+                    ->values();
 
-        if ($optionTexts->isEmpty()) {
-            return [
-                'labels' => ['Belum ada opsi jawaban'],
-                'datasets' => [[
-                    'label' => 'Opsi',
-                    'data' => [0],
-                    'backgroundColor' => ['#cbd5e1'],
-                ]],
-            ];
-        }
+                if ($optionTexts->isEmpty()) {
+                    return [
+                        'labels' => ['Belum ada opsi jawaban'],
+                        'datasets' => [[
+                            'label' => 'Opsi',
+                            'data' => [0],
+                            'backgroundColor' => ['#cbd5e1'],
+                        ]],
+                    ];
+                }
 
-        $palette = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0ea5e9', '#ec4899', '#14b8a6', '#84cc16', '#f97316'];
+                $palette = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0ea5e9', '#ec4899', '#14b8a6', '#84cc16', '#f97316'];
 
-        $labels = $questions
-            ->values()
-            ->map(fn ($question, $index) => 'Q' . ($index + 1) . ' - ' . Str::limit((string) $question->question_text, 28));
+                $labels = $questions
+                    ->values()
+                    ->map(fn ($question, $index) => 'Q' . ($index + 1) . ' - ' . Str::limit((string) $question->question_text, 28));
 
-        $datasets = $optionTexts
-            ->values()
-            ->map(function (string $optionText, int $optionIndex) use ($questions, $countsMap, $palette): array {
-                $optionCode = chr(65 + $optionIndex);
+                $datasets = $optionTexts
+                    ->values()
+                    ->map(function (string $optionText, int $optionIndex) use ($questions, $countsMap, $palette): array {
+                        $optionCode = chr(65 + $optionIndex);
+
+                        return [
+                            'label' => 'Opsi ' . $optionCode . ' - ' . $optionText,
+                            'data' => $questions
+                                ->map(function ($question) use ($optionText, $countsMap): int {
+                                    $key = (string) $question->id . ':' . $optionText;
+
+                                    return (int) ($countsMap[$key] ?? 0);
+                                })
+                                ->all(),
+                            'backgroundColor' => $palette[$optionIndex % count($palette)],
+                        ];
+                    })
+                    ->all();
 
                 return [
-                    'label' => 'Opsi ' . $optionCode . ' - ' . $optionText,
-                    'data' => $questions
-                        ->map(function ($question) use ($optionText, $countsMap): int {
-                            $key = (string) $question->id . ':' . $optionText;
-
-                            return (int) ($countsMap[$key] ?? 0);
-                        })
-                        ->all(),
-                    'backgroundColor' => $palette[$optionIndex % count($palette)],
+                    'labels' => $labels->all(),
+                    'datasets' => $datasets,
                 ];
-            })
-            ->all();
-
-        return [
-            'labels' => $labels->all(),
-            'datasets' => $datasets,
-        ];
+            }
+        );
     }
 
     protected function getOptions(): array

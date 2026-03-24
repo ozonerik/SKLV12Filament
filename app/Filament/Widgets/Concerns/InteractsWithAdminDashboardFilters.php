@@ -4,6 +4,7 @@ namespace App\Filament\Widgets\Concerns;
 
 use App\Models\SchoolYear;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Support\Facades\Cache;
 
 trait InteractsWithAdminDashboardFilters
 {
@@ -17,7 +18,9 @@ trait InteractsWithAdminDashboardFilters
             return (int) $schoolYearId;
         }
 
-        return SchoolYear::query()->orderByDesc('id')->value('id');
+        return Cache::remember('school_year:latest_id', now()->addMinutes(10), fn () =>
+            SchoolYear::query()->orderByDesc('id')->value('id')
+        );
     }
 
     protected function getSelectedSchoolYearName(): string
@@ -28,6 +31,8 @@ trait InteractsWithAdminDashboardFilters
             return 'Belum ada tahun pelajaran';
         }
 
-        return SchoolYear::query()->whereKey($schoolYearId)->value('name') ?? 'Tahun pelajaran tidak ditemukan';
+        return Cache::remember("school_year:name:{$schoolYearId}", now()->addMinutes(10), fn () =>
+            SchoolYear::query()->whereKey($schoolYearId)->value('name') ?? 'Tahun pelajaran tidak ditemukan'
+        );
     }
 }
