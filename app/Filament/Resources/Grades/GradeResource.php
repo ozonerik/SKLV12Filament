@@ -8,6 +8,7 @@ use App\Filament\Resources\Grades\Pages\ListGrades;
 use App\Models\Grade;
 use App\Models\Major;
 use App\Models\SchoolYear;
+use App\Models\Student;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -15,6 +16,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -43,6 +45,7 @@ class GradeResource extends Resource
                 Select::make('school_year_id')
                     ->label('Tahun Pelajaran')
                     ->options(SchoolYear::query()->orderBy('name')->pluck('name', 'id')->all())
+                    ->native(false)
                     ->searchable()
                     ->preload()
                     ->live()
@@ -52,6 +55,7 @@ class GradeResource extends Resource
                 Select::make('major_id')
                     ->label('Jurusan')
                     ->options(Major::query()->orderBy('konsentrasi_keahlian')->pluck('konsentrasi_keahlian', 'id')->all())
+                    ->native(false)
                     ->searchable()
                     ->preload()
                     ->live()
@@ -60,15 +64,41 @@ class GradeResource extends Resource
                     ->afterStateUpdated(fn($state, callable $set) => $set('student_id', null)),
                 Select::make('student_id')
                     ->label('Nama Siswa')
-                    ->relationship(
-                        'student',
-                        'name',
-                        fn(Builder $query, callable $get) => $query
-                            ->when($get('school_year_id'), fn(Builder $studentQuery, $schoolYearId) => $studentQuery->where('school_year_id', $schoolYearId))
-                            ->when($get('major_id'), fn(Builder $studentQuery, $majorId) => $studentQuery->where('major_id', $majorId))
-                            ->orderBy('nis')
-                    )
-                    ->getOptionLabelFromRecordUsing(fn($record): string => trim(($record->nis ?: '-') . ' - ' . $record->name))
+                    ->native(false)
+                    ->placeholder('Pilih siswa')
+                    ->options(fn(Get $get): array => Student::query()
+                        ->when($get('school_year_id'), fn(Builder $query, $schoolYearId) => $query->where('school_year_id', $schoolYearId))
+                        ->when($get('major_id'), fn(Builder $query, $majorId) => $query->where('major_id', $majorId))
+                        ->orderBy('nis')
+                        ->orderBy('name')
+                        ->get()
+                        ->mapWithKeys(fn(Student $student): array => [
+                            $student->id => trim(($student->nis ?: '-') . ' - ' . $student->name),
+                        ])
+                        ->all())
+                    ->getSearchResultsUsing(fn(string $search, Get $get): array => Student::query()
+                        ->when($get('school_year_id'), fn(Builder $query, $schoolYearId) => $query->where('school_year_id', $schoolYearId))
+                        ->when($get('major_id'), fn(Builder $query, $majorId) => $query->where('major_id', $majorId))
+                        ->where(function (Builder $query) use ($search): void {
+                            $query
+                                ->where('nis', 'like', "%{$search}%")
+                                ->orWhere('name', 'like', "%{$search}%");
+                        })
+                        ->orderBy('nis')
+                        ->orderBy('name')
+                        ->limit(50)
+                        ->get()
+                        ->mapWithKeys(fn(Student $student): array => [
+                            $student->id => trim(($student->nis ?: '-') . ' - ' . $student->name),
+                        ])
+                        ->all())
+                    ->getOptionLabelUsing(fn($value): ?string => filled($value)
+                        ? Student::query()
+                            ->whereKey($value)
+                            ->get()
+                            ->map(fn(Student $student): string => trim(($student->nis ?: '-') . ' - ' . $student->name))
+                            ->first()
+                        : null)
                     ->searchable()
                     ->preload()
                     ->required(),

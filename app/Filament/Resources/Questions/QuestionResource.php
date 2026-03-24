@@ -40,20 +40,26 @@ class QuestionResource extends Resource
             ->components([
                 Select::make('questionnaire_id')
                     ->relationship('questionnaire', 'title')
+                    ->label('Kuesioner')
                     ->searchable()
                     ->preload()
                     ->required(),
                 Textarea::make('question_text')
+                    ->label('Pertanyaan')
                     ->required()
                     ->columnSpanFull(),
                 Select::make('type')
+                    ->label('Tipe')
                     ->options(['essay' => 'Essay', 'pg' => 'Pilihan ganda'])
-                    ->required(),
+                    ->required()
+                    ->live(),
                 TextInput::make('weight')
+                    ->label('Bobot')
                     ->required()
                     ->numeric()
                     ->default(0),
                 TextInput::make('order')
+                    ->label('Urutan')
                     ->required()
                     ->numeric()
                     ->default(0),
@@ -70,14 +76,18 @@ class QuestionResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('type')
+                    ->label('Tipe')
                     ->badge(),
                 TextColumn::make('weight')
+                    ->label('Bobot')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('order')
+                    ->label('Urutan')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('question_text')
+                    ->label('Pertanyaan')
                     ->wrap()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -43,8 +43,10 @@ class QuestionnaireResource extends Resource
         return $schema
             ->components([
                 TextInput::make('title')
+                    ->label('Judul')
                     ->required(),
                 Textarea::make('description')
+                    ->label('Deskripsi')
                     ->columnSpanFull(),
                 Select::make('school_year_id')
                     ->label('Tahun Pelajaran')
@@ -54,16 +56,22 @@ class QuestionnaireResource extends Resource
                     ->helperText('Kuesioner ini hanya akan tampil untuk siswa pada tahun pelajaran yang dipilih.')
                     ->required(),
                 DatePicker::make('start_date')
+                    ->label('Tanggal Mulai')
                     ->native(false)
                     ->locale('id')
                     ->required()
+                    ->closeOnDateSelection()
                     ->displayFormat('d/m/Y'),
                 DatePicker::make('end_date')
+                    ->label('Tanggal Selesai')
                     ->native(false)
                     ->locale('id')
                     ->required()
+                    ->closeOnDateSelection()
                     ->displayFormat('d/m/Y'),
                 Toggle::make('is_active')
+                    ->label('Aktif')
+                    ->default(false)
                     ->helperText('Hanya satu kuesioner aktif yang boleh memiliki periode bertumpang tindih pada tahun pelajaran yang sama.')
                     ->required(),
             ]);
@@ -75,18 +83,22 @@ class QuestionnaireResource extends Resource
             ->recordTitleAttribute('title')
             ->columns([
                 TextColumn::make('title')
+                    ->label('Judul')
                     ->searchable(),
                 TextColumn::make('schoolYear.name')
                     ->label('Tahun Pelajaran')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('start_date')
+                    ->label('Tanggal Mulai')
                     ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('end_date')
+                    ->label('Tanggal Selesai')
                     ->date('d/m/Y')
                     ->sortable(),
                 IconColumn::make('is_active')
+                    ->label('Aktif')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')

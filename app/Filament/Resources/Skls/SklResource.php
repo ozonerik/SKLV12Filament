@@ -91,19 +91,26 @@ class SklResource extends Resource
                     ->options(['Lulus' => 'Lulus', 'Tidak Lulus' => 'Tidak lulus'])
                     ->required(),
                 DatePicker::make('letter_date')
+                    ->label('Tanggal Surat')
                     ->native(false)
                     ->locale('id')
                     ->required()
+                    ->closeOnDateSelection()
                     ->displayFormat('d/m/Y'),
                 TextInput::make('letter_number')
+                    ->label('Nomor Surat')
                     ->required(),
                 DateTimePicker::make('published_at')
+                    ->label('Tanggal Terbit')
                     ->native(false)
                     ->locale('id')
                     ->required()
                     ->displayFormat('d/m/Y H:i')
+                    ->closeOnDateSelection()
                     ->seconds(false),
                 Toggle::make('is_questionnaire_completed')
+                    ->label('Kuesioner Selesai')
+                    ->default(false)
                     ->required(),
             ]);
     }
@@ -138,6 +145,7 @@ class SklResource extends Resource
                 TextColumn::make('student.jenis_kelamin')
                     ->label('Jenis Kelamin'),
                 TextColumn::make('letter_number')
+                    ->label('Nomor Surat')
                     ->searchable(),
                 TextColumn::make('verification_code')
                     ->label('Kode Verifikasi')
@@ -153,9 +161,11 @@ class SklResource extends Resource
                         default => 'gray',
                     }),
                 TextColumn::make('letter_date')
+                    ->label('Tanggal Surat')
                     ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('published_at')
+                    ->label('Tanggal Terbit')
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
                 TextColumn::make('student.average_grade')
@@ -172,6 +182,7 @@ class SklResource extends Resource
                         );
                     }),
                 IconColumn::make('is_questionnaire_completed')
+                    ->label('Kuesioner Selesai')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')
