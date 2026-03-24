@@ -3,22 +3,22 @@
 <head>
     <meta charset="utf-8">
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #000; line-height: 1.25; margin: 0; padding-bottom: 3cm; }
+        body { font-family: Times-Roman, serif; font-size: 12px; color: #000; line-height: 1.25; margin: 0; padding-bottom: 3cm; }
         .center { text-align: center; }
         .kop { width: 100%; border-bottom: 2px solid #000; margin-bottom: 6px; }
         .kop td { vertical-align: top; }
         .logo { width: 72px; height: 72px; object-fit: contain; }
-        .kop-top { font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .kop-school { font-size: 34px; font-weight: 700; text-transform: uppercase; line-height: 1.05; }
+        .kop-top { font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .kop-school { font-size: 20px; font-weight: 700; text-transform: uppercase; line-height: 1.05; }
         .kop-address { font-size: 10px; }
-        .doc-title { margin-top: 8px; font-size: 31px; font-weight: 700; text-transform: uppercase; text-decoration: underline; }
-        .doc-number { font-size: 15px; margin-top: 2px; }
+        .doc-title { margin-top: 8px; font-size: 16px; font-weight: 700; text-transform: uppercase; text-decoration: underline; }
+        .doc-number { font-size: 12px; margin-top: 2px; }
         .paragraph { margin: 3px 0; }
         .identity { width: 100%; margin-top: 4px; }
         .identity td { padding: 0; vertical-align: top; }
         .identity .label { width: 180px; }
         .identity .colon { width: 10px; }
-        .status { text-align: center; font-size: 20px; font-weight: 700; text-transform: uppercase; margin: 1px 0 2px; }
+        .status { text-align: center; font-size: 14px; font-weight: 700; text-transform: uppercase; margin: 2px 0 2px; }
         .grade-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
         .grade-table th, .grade-table td { border: 1px solid #000; padding: 1px 4px; }
         .grade-table thead th { text-align: center; font-weight: 700; }
@@ -89,16 +89,16 @@
                 <div class="kop-top">Dinas Pendidikan</div>
                 <div class="kop-top">Kantor Cabang Dinas Pendidikan Wilayah {{ strtoupper((string) ($school?->kcd_wilayah ?? '-')) }}</div>
                 <div class="kop-school">{{ strtoupper((string) ($school?->name ?? 'SMK NEGERI')) }}</div>
-                <div class="kop-address">Alamat: {{ $school?->address ?? '-' }}, {{ $school?->postal_code ?? '-' }}</div>
+                <div class="kop-address">Alamat: {{ $school?->address ?? '-' }} - {{ $school?->city ?? '-' }}, {{ $school?->postal_code ?? '-' }}</div>
                 <div class="kop-address">
-                    @if (! empty($school?->phone))
-                        Telp. {{ $school->phone }}
+                    @if (! empty($school?->website))
+                        Website: {{ $school->website }}
                     @endif
                     @if (! empty($school?->email))
-                        | Email. {{ $school->email }}
+                        Email. {{ $school->email }}
                     @endif
-                    @if (! empty($school?->website))
-                        | Website: {{ $school->website }}
+                    @if (! empty($school?->phone))
+                        Telp. {{ $school->phone }}
                     @endif
                 </div>
             </td>
