@@ -34,9 +34,11 @@ class UserResource extends Resource
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nama')
                     ->required()
                     ->maxLength(255),
                 TextInput::make('email')
+                    ->label('Email')
                     ->email()
                     ->required()
                     ->maxLength(255)
@@ -53,6 +55,7 @@ class UserResource extends Resource
                     ->directory('users/photos')
                     ->nullable(),
                 TextInput::make('password')
+                    ->label('Password')
                     ->password()
                     ->revealable(filament()->arePasswordsRevealable())
                     ->minLength(8)
@@ -76,8 +79,10 @@ class UserResource extends Resource
                     ->disk('public')
                     ->circular(),
                 TextColumn::make('name')
+                    ->label('Nama')
                     ->searchable(),
                 TextColumn::make('email')
+                    ->label('Email')
                     ->searchable(),
                 IconColumn::make('is_admin')
                     ->label('Admin')

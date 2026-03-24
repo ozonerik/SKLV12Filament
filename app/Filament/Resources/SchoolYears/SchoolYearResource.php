@@ -37,10 +37,13 @@ class SchoolYearResource extends Resource
         return $schema
             ->components([
                 TextInput::make('kode')
+                    ->label('Kode Tahun Pelajaran')
                     ->required(),
                 TextInput::make('name')
+                    ->label('Nama Tahun Pelajaran')
                     ->required(),
                 Select::make('headmaster_id')
+                    ->label('Kepala Sekolah')
                     ->relationship('headmaster', 'name')
                     ->searchable()
                     ->preload()
@@ -55,8 +58,10 @@ class SchoolYearResource extends Resource
             ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('kode')
+                    ->label('Kode Tahun Pelajaran')
                     ->searchable(),
                 TextColumn::make('name')
+                    ->label('Nama Tahun Pelajaran')
                     ->searchable(),
                 TextColumn::make('headmaster.name')
                     ->label('Kepala Sekolah')

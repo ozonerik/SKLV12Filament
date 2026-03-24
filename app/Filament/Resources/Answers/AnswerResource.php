@@ -22,7 +22,7 @@ class AnswerResource extends Resource
 {
     protected static ?string $model = Answer::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'fluentui-book-letter-20-o';
 
     protected static ?string $modelLabel = 'Jawaban Siswa';
 

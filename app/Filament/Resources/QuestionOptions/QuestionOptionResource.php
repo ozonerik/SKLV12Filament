@@ -22,7 +22,7 @@ class QuestionOptionResource extends Resource
 {
     protected static ?string $model = QuestionOption::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'fluentui-document-bullet-list-20-o';
 
     protected static ?string $modelLabel = 'Pilihan Jawaban';
 

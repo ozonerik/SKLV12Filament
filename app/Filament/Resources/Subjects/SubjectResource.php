@@ -38,10 +38,13 @@ class SubjectResource extends Resource
         return $schema
             ->components([
                 TextInput::make('kode')
+                    ->label('Kode Mata Pelajaran')
                     ->required(),
                 TextInput::make('name')
+                    ->label('Nama Mata Pelajaran')
                     ->required(),
                 Select::make('category')
+                    ->label('Kelommpok Mata Pelajaran')
                     ->options(['Umum' => 'Umum', 'Kejuruan' => 'Kejuruan', 'Pilihan' => 'Pilihan', 'Mulok' => 'Mulok'])
                     ->required(),
             ]);
@@ -54,10 +57,14 @@ class SubjectResource extends Resource
             ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('kode')
+                    ->label('Kode Mata Pelajaran')
                     ->searchable(),
                 TextColumn::make('name')
+                    ->label('Nama Mata Pelajaran')
                     ->searchable(),
                 TextColumn::make('category')
+                    ->label('Kelommpok Mata Pelajaran')
+                    ->searchable()
                     ->badge(),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')

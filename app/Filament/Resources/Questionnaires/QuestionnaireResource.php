@@ -28,7 +28,7 @@ class QuestionnaireResource extends Resource
 {
     protected static ?string $model = Questionnaire::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'fluentui-notebook-question-mark-24-o';
 
     protected static ?string $modelLabel = 'Kuesioner';
 

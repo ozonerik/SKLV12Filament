@@ -41,10 +41,13 @@ class HeadmasterResource extends Resource
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nama Kepala Sekolah')
                     ->required(),
                 TextInput::make('rank')
+                    ->label('Pangkat/Golongan')
                     ->required(),
                 TextInput::make('nip')
+                    ->label('NIP')
                     ->required(),
                 // Perubahan di sini: Menggunakan FileUpload
                 FileUpload::make('ttd')
@@ -59,6 +62,7 @@ class HeadmasterResource extends Resource
                     ->directory('headmasters/signatures')
                     ->required(),
                 Toggle::make('is_active')
+                    ->label('Aktif')
                     ->required(),
             ]);
     }
@@ -70,10 +74,13 @@ class HeadmasterResource extends Resource
             ->persistColumnsInSession(false)
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nama Kepala Sekolah')
                     ->searchable(),
                 TextColumn::make('rank')
+                    ->label('Pangkat/Golongan')
                     ->searchable(),
                 TextColumn::make('nip')
+                    ->label('NIP')
                     ->searchable(),
                 // Menampilkan preview tanda tangan di tabel
                 ImageColumn::make('ttd')
@@ -82,6 +89,7 @@ class HeadmasterResource extends Resource
                     //->directory('headmasters/signatures') // Pastikan ini sesuai dengan directory yang digunakan di
                     ->visibility('public'),
                 IconColumn::make('is_active')
+                    ->label('Aktif')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')
